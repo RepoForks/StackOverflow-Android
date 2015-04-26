@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.SearchView;
@@ -44,40 +45,18 @@ public class MainActivity extends ActionBarActivity implements OnQueryTextListen
     JSONObject ob1,ob2,questionsJson;
     String holder=null;
     TextView tv;
+    QuestionsAdapter adapter;
+    Question question[] = new Question[20];
+    ListView questionList;
     String url = "https://api.stackexchange.com/2.2/search?order=desc&sort=activity&intitle=android&site=stackoverflow";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        tv = (TextView)findViewById(R.id.tv);
+        //tv = (TextView)findViewById(R.id.tv);
+        questionList = (ListView)findViewById(R.id.questionList);
         new JSONTask().execute();
     }
-
-//    public String executeHttpGet(String URL) throws Exception
-//    {
-//        BufferedReader in = null;
-//            HttpClient client = new DefaultHttpClient();
-//            client.getParams().setParameter(CoreProtocolPNames.USER_AGENT, "android");
-//            HttpGet request = new HttpGet();
-//            request.setHeader("Content-Type", "text/plain; charset=utf-8");
-//            request.setURI(new URI(URL));
-//            HttpResponse response = client.execute(request);
-//            in = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
-//
-//            StringBuffer sb = new StringBuffer("");
-//            String line = "";
-//
-//            String NL = System.getProperty("line.separator");
-//            while ((line = in.readLine()) != null)
-//            {
-//                sb.append(line + NL);
-//            }
-//            in.close();
-//            String page = sb.toString();
-//            //System.out.println(page);
-//            return page;
-//
-//    }
 
     public JSONObject makeRequest(String url) throws IOException, JSONException {
 
@@ -138,11 +117,7 @@ public class MainActivity extends ActionBarActivity implements OnQueryTextListen
         @Override
         protected JSONObject doInBackground(String... params) {
             try {
-                //String s = readJSON();
-                //ob1 = new JSONObject(s);
                 questionsJson = makeRequest(url);
-//                Toast.makeText(MainActivity.this,String.valueOf(ob1),Toast.LENGTH_SHORT).show();
-                //Log.i("myJson", String.valueOf(ob1));
             } catch (JSONException e) {
                 e.printStackTrace();
             } catch (IOException e) {
@@ -154,14 +129,17 @@ public class MainActivity extends ActionBarActivity implements OnQueryTextListen
         @Override
         protected void onPostExecute(JSONObject jsonObject) {
             try {
-                //if(ob1!=null&&!ob1.isNull("items")){
                 mJSONArr = jsonObject.getJSONArray("items");
                 for(int i=0;i<20;i++)
                 {
                     ob2 = mJSONArr.getJSONObject(i);
-                    holder+=ob2.getString("title")+"\n";
+                    question[i] = new Question(ob2.getString("title"),"Author",ob2.getString("score"));
                 }
-                tv.setText(holder);
+                adapter = new QuestionsAdapter(MainActivity.this,
+                        R.layout.question_list_item, question);
+                questionList.setAdapter(adapter);
+                //Ques
+                //tv.setText(holder);
                 pDialog.dismiss();
             } catch (JSONException e) {
                 e.printStackTrace();
