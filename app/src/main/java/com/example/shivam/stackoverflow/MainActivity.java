@@ -42,20 +42,19 @@ public class MainActivity extends ActionBarActivity implements OnQueryTextListen
     SearchView mSearchView;
     StringBuilder builder = new StringBuilder();
     JSONArray mJSONArr;
-    JSONObject ob1,ob2,questionsJson;
+    JSONObject ob3,ob2,questionsJson;
     String holder=null;
     TextView tv;
     QuestionsAdapter adapter;
     Question question[] = new Question[20];
     ListView questionList;
-    String url = "https://api.stackexchange.com/2.2/search?order=desc&sort=activity&intitle=android&site=stackoverflow";
+    String url = "https://api.stackexchange.com/2.2/search?order=desc&sort=activity&";//intitle=android&site=stackoverflow";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         //tv = (TextView)findViewById(R.id.tv);
         questionList = (ListView)findViewById(R.id.questionList);
-        new JSONTask().execute();
     }
 
     public JSONObject makeRequest(String url) throws IOException, JSONException {
@@ -133,13 +132,12 @@ public class MainActivity extends ActionBarActivity implements OnQueryTextListen
                 for(int i=0;i<20;i++)
                 {
                     ob2 = mJSONArr.getJSONObject(i);
-                    question[i] = new Question(ob2.getString("title"),"Author",ob2.getString("score"));
+                    ob3 = ob2.getJSONObject("owner");
+                    question[i] = new Question(ob2.getString("title"),ob3.getString("display_name"),ob2.getString("score"));
                 }
                 adapter = new QuestionsAdapter(MainActivity.this,
                         R.layout.question_list_item, question);
                 questionList.setAdapter(adapter);
-                //Ques
-                //tv.setText(holder);
                 pDialog.dismiss();
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -150,7 +148,6 @@ public class MainActivity extends ActionBarActivity implements OnQueryTextListen
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
         mSearchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
@@ -218,7 +215,12 @@ public class MainActivity extends ActionBarActivity implements OnQueryTextListen
 
     @Override
     public boolean onQueryTextSubmit(String s) {
-        Toast.makeText(MainActivity.this,"You searched for "+s,Toast.LENGTH_SHORT).show();
+        //Toast.makeText(MainActivity.this,"You searched for "+s,Toast.LENGTH_SHORT).show();
+        url+="intitle="+s+"&site=stackoverflow";
+        mSearchView.setQuery("", false);
+        mSearchView.clearFocus();
+        mSearchView.setIconified(true);
+        new JSONTask().execute();
         return false;
     }
 
