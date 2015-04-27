@@ -7,7 +7,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/questionTitle"
-        android:textSize="25sp"
+        android:textSize="15sp"
+        android:textColor="@android:color/black"
         android:text="Title"
         android:padding="10dp"
         />
@@ -32,6 +33,14 @@
         android:id="@+id/questionVotes"
         android:text="Votes"
         android:padding="10dp"
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:id="@+id/questionID"
+        android:visibility="gone"
         />
 
 

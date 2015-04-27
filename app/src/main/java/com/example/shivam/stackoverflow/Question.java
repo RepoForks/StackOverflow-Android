@@ -5,16 +5,17 @@ package com.example.shivam.stackoverflow;
  */
 public class Question {
 
-    public String title,author,votes;
+    public String title,author,votes,id;
 
     public Question()
     {
 
     }
-    public Question(String title,String author,String votes)
+    public Question(String title,String author,String votes,String id)
     {
         this.title = title;
         this.author = author;
         this.votes = votes;
+        this.id = id;
     }
 }

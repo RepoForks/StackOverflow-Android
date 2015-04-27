@@ -3,12 +3,15 @@ package com.example.shivam.stackoverflow;
 import android.app.ProgressDialog;
 import android.app.SearchManager;
 import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -55,6 +58,15 @@ public class MainActivity extends ActionBarActivity implements OnQueryTextListen
         setContentView(R.layout.activity_main);
         //tv = (TextView)findViewById(R.id.tv);
         questionList = (ListView)findViewById(R.id.questionList);
+        questionList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                String selectedQuestion = ((TextView)(view.findViewById(R.id.questionID))).getText().toString();
+                Intent i = new Intent(MainActivity.this,AnswerActivity.class);
+                i.putExtra("QUESTION",selectedQuestion);
+                startActivity(i);
+            }
+        });
     }
 
     public JSONObject makeRequest(String url) throws IOException, JSONException {
@@ -133,12 +145,13 @@ public class MainActivity extends ActionBarActivity implements OnQueryTextListen
                 {
                     ob2 = mJSONArr.getJSONObject(i);
                     ob3 = ob2.getJSONObject("owner");
-                    question[i] = new Question(ob2.getString("title"),ob3.getString("display_name"),ob2.getString("score"));
+                    question[i] = new Question(ob2.getString("title"),ob3.getString("display_name"),ob2.getString("score"),ob2.getString("question_id"));
                 }
                 adapter = new QuestionsAdapter(MainActivity.this,
                         R.layout.question_list_item, question);
                 questionList.setAdapter(adapter);
                 pDialog.dismiss();
+                url = "https://api.stackexchange.com/2.2/search?order=desc&sort=activity&";
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -205,21 +218,19 @@ public class MainActivity extends ActionBarActivity implements OnQueryTextListen
         if (id == R.id.action_settings) {
             return true;
         }
-        else if(id == R.id.action_settings)
-        {
-
-        }
-
         return super.onOptionsItemSelected(item);
     }
 
     @Override
     public boolean onQueryTextSubmit(String s) {
         //Toast.makeText(MainActivity.this,"You searched for "+s,Toast.LENGTH_SHORT).show();
-        url+="intitle="+s+"&site=stackoverflow";
         mSearchView.setQuery("", false);
         mSearchView.clearFocus();
         mSearchView.setIconified(true);
+        url+="intitle="+s+"&site=stackoverflow";
+//        mSearchView.setQuery("", false);
+//        mSearchView.clearFocus();
+//        mSearchView.setIconified(true);
         new JSONTask().execute();
         return false;
     }

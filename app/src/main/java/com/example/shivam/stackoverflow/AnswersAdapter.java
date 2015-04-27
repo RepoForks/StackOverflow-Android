@@ -14,13 +14,13 @@ import android.widget.TextView;
 /**
  * Created by Shivam on 26/04/15.
  */
-public class QuestionsAdapter extends ArrayAdapter<Question> {
+public class AnswersAdapter extends ArrayAdapter<Answer> {
 
     static Context context;
     static int layoutResourceId;
-    Question data[] = null;
+    Answer data[] = null;
 
-    public QuestionsAdapter(Context context, int layoutResourceId, Question[] data) {
+    public AnswersAdapter(Context context, int layoutResourceId, Answer[] data) {
         super(context, layoutResourceId, data);
         this.layoutResourceId = layoutResourceId;
         this.context = context;
@@ -33,41 +33,38 @@ public class QuestionsAdapter extends ArrayAdapter<Question> {
 
     public View getView(int position, View convertView, ViewGroup parent) {
         View row = convertView;
-        QuestionHolder holder = null;
+        AnswerHolder holder = null;
         if(row == null)
         {
             LayoutInflater inflater = ((Activity)context).getLayoutInflater();
             row = inflater.inflate(layoutResourceId, parent, false);
-            holder = new QuestionHolder();
-            holder.txtTitle = (TextView)row.findViewById(R.id.questionTitle);
-            holder.txtTitle2 = (TextView)row.findViewById(R.id.questionAuthor);
-            holder.txtTitle3 = (TextView)row.findViewById(R.id.questionVotes);
-            holder.txtTitle4 = (TextView)row.findViewById(R.id.questionID);
+            holder = new AnswerHolder();
+            holder.txtTitle = (TextView)row.findViewById(R.id.answerText);
+            holder.txtTitle2 = (TextView)row.findViewById(R.id.answerAuthor);
+            holder.txtTitle3 = (TextView)row.findViewById(R.id.answerVotes);
             row.setTag(holder);
         }
         else
         {
-            holder = (QuestionHolder)row.getTag();
+            holder = (AnswerHolder)row.getTag();
         }
-        Question hold = data[position];
+        Answer hold = data[position];
         /*int limit = 12;
         if (hold.name.length() > limit) {
             holder.txtTitle.setText(hold.name.substring(0, limit)+"...");
         } else {
             holder.txtTitle.setText(hold.name);
         }*/
-        holder.txtTitle.setText(hold.title);
+        holder.txtTitle.setText(hold.text);
         holder.txtTitle2.setText(hold.author);
         holder.txtTitle3.setText(hold.votes);
-        holder.txtTitle4.setText(hold.id);
         return row;
     }
 
-    static class QuestionHolder
+    static class AnswerHolder
     {
         TextView txtTitle;
         TextView txtTitle2;
         TextView txtTitle3;
-        TextView txtTitle4;
     }
 }
