@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
 import android.text.Html;
+import android.text.method.LinkMovementMethod;
+import android.text.util.Linkify;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,7 +21,7 @@ public class AnswersAdapter extends ArrayAdapter<Answer> {
 
     static Context context;
     static int layoutResourceId;
-    Answer data[] = null;
+    Answer[] data = null;
 
     public AnswersAdapter(Context context, int layoutResourceId, Answer[] data) {
         super(context, layoutResourceId, data);
@@ -41,6 +43,8 @@ public class AnswersAdapter extends ArrayAdapter<Answer> {
             row = inflater.inflate(layoutResourceId, parent, false);
             holder = new AnswerHolder();
             holder.txtTitle = (TextView)row.findViewById(R.id.answerText);
+            holder.txtTitle.setMovementMethod(LinkMovementMethod.getInstance());
+            holder.txtTitle.setAutoLinkMask(Linkify.WEB_URLS);
             holder.txtTitle2 = (TextView)row.findViewById(R.id.answerAuthor);
             holder.txtTitle3 = (TextView)row.findViewById(R.id.answerVotes);
             row.setTag(holder);
@@ -50,13 +54,7 @@ public class AnswersAdapter extends ArrayAdapter<Answer> {
             holder = (AnswerHolder)row.getTag();
         }
         Answer hold = data[position];
-        /*int limit = 12;
-        if (hold.name.length() > limit) {
-            holder.txtTitle.setText(hold.name.substring(0, limit)+"...");
-        } else {
-            holder.txtTitle.setText(hold.name);
-        }*/
-        if(hold.text!=null) {
+        if(hold!=null) {
             holder.txtTitle.setText(Html.fromHtml(hold.text));
             holder.txtTitle2.setText(hold.author);
             holder.txtTitle3.setText(hold.votes);

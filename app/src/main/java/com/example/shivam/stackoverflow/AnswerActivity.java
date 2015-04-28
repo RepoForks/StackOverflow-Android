@@ -38,7 +38,6 @@ public class AnswerActivity extends ActionBarActivity {
     private String site = "site=stackoverflow";
     String requestUrl=null;
     ///answers?order=desc&sort=activity&filter=!*LVw4pKRvjyBRppf&site=site=stackoverflow
-    Answer answers[] = new Answer[20];
     ListView answerList;
     JSONArray mJSONArr;
     AnswersAdapter adapter;
@@ -135,12 +134,15 @@ public class AnswerActivity extends ActionBarActivity {
         protected void onPostExecute(JSONObject jsonObject) {
             try {
                 mJSONArr = jsonObject.getJSONArray("items");
+                Answer answers[] = new Answer[mJSONArr.length()];
                 for(int i=0;i<mJSONArr.length();i++)
                 {
                     String val = null;
-                    ob2 = mJSONArr.getJSONObject(i);
-                    //ob3 = ob2.getJSONObject("owner");
-                    answers[i] = new Answer(ob2.getString("body"),"DIsplay name",ob2.getString("score"));
+                        ob2 = mJSONArr.getJSONObject(i);
+                    if(ob2!=null) {
+                        //ob3 = ob2.getJSONObject("owner");
+                        answers[i] = new Answer(ob2.getString("body"), ob2.getString("score"), ob2.getString("score"));
+                  }
                 }
                 adapter = new AnswersAdapter(AnswerActivity.this,
                         R.layout.answer_list_item, answers);

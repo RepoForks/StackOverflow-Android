@@ -36,7 +36,9 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
+import java.net.URLEncoder;
 import java.util.zip.GZIPInputStream;
 
 
@@ -227,6 +229,12 @@ public class MainActivity extends ActionBarActivity implements OnQueryTextListen
         mSearchView.setQuery("", false);
         mSearchView.clearFocus();
         mSearchView.setIconified(true);
+        try {
+            s = URLEncoder.encode(s, "utf-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+
         url+="intitle="+s+"&site=stackoverflow";
 //        mSearchView.setQuery("", false);
 //        mSearchView.clearFocus();
