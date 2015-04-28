@@ -4,6 +4,9 @@ import android.app.ProgressDialog;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
+import android.graphics.drawable.Drawable;
+import android.media.Image;
 import android.os.AsyncTask;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -12,6 +15,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -53,6 +57,7 @@ public class MainActivity extends ActionBarActivity implements OnQueryTextListen
     QuestionsAdapter adapter;
     Question question[] = new Question[20];
     ListView questionList;
+    ImageView img;
     String url = "https://api.stackexchange.com/2.2/search?order=desc&sort=activity&";//intitle=android&site=stackoverflow";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +65,8 @@ public class MainActivity extends ActionBarActivity implements OnQueryTextListen
         setContentView(R.layout.activity_main);
         //tv = (TextView)findViewById(R.id.tv);
         questionList = (ListView)findViewById(R.id.questionList);
+        tv = (TextView)findViewById(R.id.introText);
+        img = (ImageView)findViewById(R.id.introImage);
         questionList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -69,6 +76,10 @@ public class MainActivity extends ActionBarActivity implements OnQueryTextListen
                 startActivity(i);
             }
         });
+        Resources r=getResources();
+        Drawable d=r.getDrawable(R.color.primary);
+        getSupportActionBar().setBackgroundDrawable(d);
+
     }
 
     public JSONObject makeRequest(String url) throws IOException, JSONException {
@@ -236,6 +247,9 @@ public class MainActivity extends ActionBarActivity implements OnQueryTextListen
         }
 
         url+="intitle="+s+"&site=stackoverflow";
+        img.setVisibility(View.GONE);
+        tv.setVisibility(View.GONE);
+        questionList.setVisibility(View.VISIBLE);
 //        mSearchView.setQuery("", false);
 //        mSearchView.clearFocus();
 //        mSearchView.setIconified(true);

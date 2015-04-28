@@ -7,13 +7,24 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/questionList"
+        android:visibility="gone"
         ></ListView>
 
     <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:visibility="gone"
+        android:src="@drawable/ic_search_grey_500_48dp"
+        android:id="@+id/introImage"
+        />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Start by searching for something"
+        android:layout_below="@+id/introImage"
+        android:id="@+id/introText"
+        android:layout_marginTop="20dp"
+        android:layout_centerHorizontal="true"
         />
 
 

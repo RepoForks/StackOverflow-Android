@@ -24,7 +24,9 @@
         </activity>
         <activity
             android:name=".AnswerActivity"
-            android:label="@string/title_activity_answer" >
+            android:label="@string/title_activity_answer"
+            android:parentActivityName=".MainActivity"
+            >
         </activity>
     </application>
 

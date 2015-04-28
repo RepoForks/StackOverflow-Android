@@ -1,7 +1,10 @@
 package com.example.shivam.stackoverflow;
 
 import android.app.ProgressDialog;
+import android.content.res.Resources;
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
+import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -47,6 +50,8 @@ public class AnswerActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_answer);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         Bundle extras = getIntent().getExtras();
         String question = extras.getString("QUESTION");
         try {
@@ -54,14 +59,12 @@ public class AnswerActivity extends ActionBarActivity {
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
-        //Toast.makeText(AnswerActivity.this,question+"",Toast.LENGTH_SHORT).show();
         answerList = (ListView)findViewById(R.id.answerList);
-        //this.url+=
         requestUrl = this.endPoint + "questions/" + question + "/answers?order=desc&sort=activity&filter=!*LVw4pKRvjyBRppf&" + this.site;
-        Log.e("URL",requestUrl);
+        Resources r=getResources();
+        Drawable d=r.getDrawable(R.color.primary);
+        getSupportActionBar().setBackgroundDrawable(d);
         new JSONTask().execute();
-        //Toast.makeText(AnswerActivity.this,requestUrl+"",Toast.LENGTH_SHORT).show();
-
     }
 
     private JSONObject makeRequest(String url) throws IOException, JSONException {
@@ -172,6 +175,11 @@ public class AnswerActivity extends ActionBarActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            return true;
+        }
+        if(id==R.id.home)
+        {
+            NavUtils.navigateUpFromSameTask(this);
             return true;
         }
 
