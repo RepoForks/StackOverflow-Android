@@ -3,6 +3,7 @@ package com.example.shivam.stackoverflow;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -55,9 +56,11 @@ public class AnswersAdapter extends ArrayAdapter<Answer> {
         } else {
             holder.txtTitle.setText(hold.name);
         }*/
-        holder.txtTitle.setText(hold.text);
-        holder.txtTitle2.setText(hold.author);
-        holder.txtTitle3.setText(hold.votes);
+        if(hold.text!=null) {
+            holder.txtTitle.setText(Html.fromHtml(hold.text));
+            holder.txtTitle2.setText(hold.author);
+            holder.txtTitle3.setText(hold.votes);
+        }
         return row;
     }
 

@@ -59,13 +59,13 @@ public class AnswerActivity extends ActionBarActivity {
         answerList = (ListView)findViewById(R.id.answerList);
         //this.url+=
         requestUrl = this.endPoint + "questions/" + question + "/answers?order=desc&sort=activity&filter=!*LVw4pKRvjyBRppf&" + this.site;
+        Log.e("URL",requestUrl);
         new JSONTask().execute();
         //Toast.makeText(AnswerActivity.this,requestUrl+"",Toast.LENGTH_SHORT).show();
-        //Log.e("URL",requestUrl);
 
     }
 
-    public JSONObject makeRequest(String url) throws IOException, JSONException {
+    private JSONObject makeRequest(String url) throws IOException, JSONException {
 
         JSONObject response;
         String jsonString;
@@ -135,11 +135,12 @@ public class AnswerActivity extends ActionBarActivity {
         protected void onPostExecute(JSONObject jsonObject) {
             try {
                 mJSONArr = jsonObject.getJSONArray("items");
-                for(int i=0;i<20;i++)
+                for(int i=0;i<mJSONArr.length();i++)
                 {
+                    String val = null;
                     ob2 = mJSONArr.getJSONObject(i);
-                    ob3 = ob2.getJSONObject("owner");
-                    answers[i] = new Answer(ob2.getString("body"),ob3.getString("display_name"),ob2.getString("score"));
+                    //ob3 = ob2.getJSONObject("owner");
+                    answers[i] = new Answer(ob2.getString("body"),"DIsplay name",ob2.getString("score"));
                 }
                 adapter = new AnswersAdapter(AnswerActivity.this,
                         R.layout.answer_list_item, answers);
