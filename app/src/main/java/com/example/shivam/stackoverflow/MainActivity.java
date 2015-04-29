@@ -154,21 +154,33 @@ public class MainActivity extends ActionBarActivity implements OnQueryTextListen
         protected void onPostExecute(JSONObject jsonObject) {
             try {
                 mJSONArr = jsonObject.getJSONArray("items");
-                Question question[] = new Question[mJSONArr.length()];
-                for(int i=0;i<mJSONArr.length();i++)
+                /*if(mJSONArr.length()==0)
                 {
-                    if(i==19)break;
-                    ob2 = mJSONArr.getJSONObject(i);
-                    if(ob2!=null) {
-                        ob3 = ob2.getJSONObject("owner");
-                    question[i] = new Question(ob2.getString("title"),ob3.getString("display_name"),ob2.getString("score"),ob2.getString("question_id"));
-                }}
-                adapter = new QuestionsAdapter(MainActivity.this,
-                        R.layout.question_list_item, question);
-                questionList.setAdapter(adapter);
-                pDialog.dismiss();
-                url = "https://api.stackexchange.com/2.2/search?order=desc&sort=activity&";
-            } catch (JSONException e) {
+                    pDialog.dismiss();
+                    Toast.makeText(MainActivity.this,"No questions found !",Toast.LENGTH_SHORT).show();
+                    questionList.setVisibility(View.GONE);
+                    img.setVisibility(View.VISIBLE);
+                    tv.setVisibility(View.VISIBLE);
+                }*/
+                //else {
+                    img.setVisibility(View.GONE);
+                    tv.setVisibility(View.GONE);
+                    questionList.setVisibility(View.VISIBLE);
+                    Question question[] = new Question[mJSONArr.length()];
+
+                    for (int i = 0; i < mJSONArr.length(); i++) {
+                        ob2 = mJSONArr.getJSONObject(i);
+                        if (ob2 != null) {
+                            ob3 = ob2.getJSONObject("owner");
+                            question[i] = new Question(ob2.getString("title"), ob3.getString("display_name"), ob2.getString("score"), ob2.getString("question_id"));
+                        }
+                    }
+                    adapter = new QuestionsAdapter(MainActivity.this,
+                            R.layout.question_list_item, question);
+                    questionList.setAdapter(adapter);
+                    pDialog.dismiss();
+                    url = "https://api.stackexchange.com/2.2/search?order=desc&sort=activity&";
+                }catch (JSONException e) {
                 e.printStackTrace();
             }
         }

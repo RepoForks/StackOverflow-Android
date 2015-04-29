@@ -3,23 +3,15 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/questionTitle"
-        android:textSize="15sp"
-        android:textColor="@android:color/black"
-        android:text="Title"
-        android:padding="10dp"
-        />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/questionTitle"
         android:layout_alignParentLeft="true"
-        android:layout_marginTop="20dp"
+        android:layout_alignParentTop="true"
         android:text="Author"
+        android:textSize="15sp"
+        android:textStyle="italic"
         android:textColor="@color/primary"
         android:id="@+id/questionAuthor"
         android:padding="10dp"
@@ -29,12 +21,23 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
-        android:layout_marginTop="20dp"
-        android:layout_below="@+id/questionTitle"
+        android:layout_alignParentTop="true"
         android:id="@+id/questionVotes"
         android:text="Votes"
         android:padding="10dp"
         />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/questionTitle"
+        android:textSize="15sp"
+        android:textColor="@android:color/black"
+        android:text="Title"
+        android:layout_below="@+id/questionAuthor"
+        android:padding="10dp"
+        />
+
 
     <TextView
         android:layout_width="wrap_content"

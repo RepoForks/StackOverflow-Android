@@ -138,6 +138,12 @@ public class AnswerActivity extends ActionBarActivity {
         protected void onPostExecute(JSONObject jsonObject) {
             try {
                 mJSONArr = jsonObject.getJSONArray("items");
+                if(mJSONArr.length()==0)
+                {
+                    pDialog.dismiss();
+                    Toast.makeText(AnswerActivity.this,"This question does not have any answers yet !",Toast.LENGTH_SHORT).show();
+                }
+                else{
                 Answer answers[] = new Answer[mJSONArr.length()];
                 for(int i=0;i<mJSONArr.length();i++)
                 {
@@ -153,7 +159,7 @@ public class AnswerActivity extends ActionBarActivity {
                 answerList.setAdapter(adapter);
                 pDialog.dismiss();
                 //url = "https://api.stackexchange.com/2.2/search?order=desc&sort=activity&";
-            } catch (JSONException e) {
+            }} catch (JSONException e) {
                 e.printStackTrace();
             }
         }

@@ -18,7 +18,7 @@
         android:layout_alignParentLeft="true"
         android:padding="10dp"
         android:textColor="@color/primary"
-        android:textStyle="bold"
+        android:textStyle="italic"
         android:text="Author"
         />
 

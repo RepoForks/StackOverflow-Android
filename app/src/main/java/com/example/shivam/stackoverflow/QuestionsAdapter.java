@@ -28,6 +28,11 @@ public class QuestionsAdapter extends ArrayAdapter<Question> {
         this.data = data;
     }
 
+    @Override
+    public int getCount() {
+        return 20;
+    }
+
     public long getItemId(int position) {
         return position;
     }
