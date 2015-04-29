@@ -17,6 +17,7 @@
         android:textSize="15sp"
         android:layout_alignParentLeft="true"
         android:padding="10dp"
+        android:textColor="@color/primary"
         android:textStyle="bold"
         android:text="Author"
         />

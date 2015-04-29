@@ -60,10 +60,11 @@ public class AnswerActivity extends ActionBarActivity {
             e.printStackTrace();
         }
         answerList = (ListView)findViewById(R.id.answerList);
-        requestUrl = this.endPoint + "questions/" + question + "/answers?order=desc&sort=activity&filter=!*LVw4pKRvjyBRppf&" + this.site;
+        requestUrl = this.endPoint + "questions/" + question + "/answers?order=desc&sort=activity&filter=withbody&" + this.site;
         Resources r=getResources();
         Drawable d=r.getDrawable(R.color.primary);
         getSupportActionBar().setBackgroundDrawable(d);
+        Log.e("URL",requestUrl);
         new JSONTask().execute();
     }
 
@@ -140,11 +141,11 @@ public class AnswerActivity extends ActionBarActivity {
                 Answer answers[] = new Answer[mJSONArr.length()];
                 for(int i=0;i<mJSONArr.length();i++)
                 {
-                    String val = null;
+                    //String val = null;
                         ob2 = mJSONArr.getJSONObject(i);
                     if(ob2!=null) {
-                        //ob3 = ob2.getJSONObject("owner");
-                        answers[i] = new Answer(ob2.getString("body"), ob2.getString("score"), ob2.getString("score"));
+                        ob3 = ob2.getJSONObject("owner");
+                        answers[i] = new Answer(ob2.getString("body"), ob3.getString("display_name"), ob2.getString("score"));
                   }
                 }
                 adapter = new AnswersAdapter(AnswerActivity.this,

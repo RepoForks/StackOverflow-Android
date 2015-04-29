@@ -55,7 +55,7 @@ public class MainActivity extends ActionBarActivity implements OnQueryTextListen
     String holder=null;
     TextView tv;
     QuestionsAdapter adapter;
-    Question question[] = new Question[20];
+    //Question question[] = new Question[20];
     ListView questionList;
     ImageView img;
     String url = "https://api.stackexchange.com/2.2/search?order=desc&sort=activity&";//intitle=android&site=stackoverflow";
@@ -154,12 +154,15 @@ public class MainActivity extends ActionBarActivity implements OnQueryTextListen
         protected void onPostExecute(JSONObject jsonObject) {
             try {
                 mJSONArr = jsonObject.getJSONArray("items");
-                for(int i=0;i<20;i++)
+                Question question[] = new Question[mJSONArr.length()];
+                for(int i=0;i<mJSONArr.length();i++)
                 {
+                    if(i==19)break;
                     ob2 = mJSONArr.getJSONObject(i);
-                    ob3 = ob2.getJSONObject("owner");
+                    if(ob2!=null) {
+                        ob3 = ob2.getJSONObject("owner");
                     question[i] = new Question(ob2.getString("title"),ob3.getString("display_name"),ob2.getString("score"),ob2.getString("question_id"));
-                }
+                }}
                 adapter = new QuestionsAdapter(MainActivity.this,
                         R.layout.question_list_item, question);
                 questionList.setAdapter(adapter);

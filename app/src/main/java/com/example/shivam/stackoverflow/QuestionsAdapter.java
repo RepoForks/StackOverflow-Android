@@ -57,10 +57,12 @@ public class QuestionsAdapter extends ArrayAdapter<Question> {
         } else {
             holder.txtTitle.setText(hold.name);
         }*/
-        holder.txtTitle.setText(Html.fromHtml(hold.title));
-        holder.txtTitle2.setText(hold.author);
-        holder.txtTitle3.setText(hold.votes);
-        holder.txtTitle4.setText(hold.id);
+        if(hold!=null) {
+            holder.txtTitle.setText(Html.fromHtml(hold.title));
+            holder.txtTitle2.setText(hold.author);
+            holder.txtTitle3.setText(hold.votes);
+            holder.txtTitle4.setText(hold.id);
+        }
         return row;
     }
 
