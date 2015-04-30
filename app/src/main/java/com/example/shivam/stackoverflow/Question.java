@@ -18,4 +18,24 @@ public class Question {
         this.votes = votes;
         this.id = id;
     }
+
+    public String getID()
+    {
+        return id;
+    }
+
+    public String getTitle()
+    {
+        return title;
+    }
+
+    public String getAuthor()
+    {
+        return author;
+    }
+
+    public String getVotes()
+    {
+        return votes;
+    }
 }

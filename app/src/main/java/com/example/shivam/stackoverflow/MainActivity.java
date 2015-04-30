@@ -173,6 +173,7 @@ public class MainActivity extends ActionBarActivity implements OnQueryTextListen
                         if (ob2 != null) {
                             ob3 = ob2.getJSONObject("owner");
                             question[i] = new Question(ob2.getString("title"), ob3.getString("display_name"), ob2.getString("score"), ob2.getString("question_id"));
+                            //QuestionORM.insertQuestion(MainActivity.this,question[i],url);
                         }
                     }
                     adapter = new QuestionsAdapter(MainActivity.this,
