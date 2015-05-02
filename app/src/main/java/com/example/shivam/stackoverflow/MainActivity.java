@@ -175,7 +175,7 @@ public class MainActivity extends ActionBarActivity implements OnQueryTextListen
                     }
                     adapter = new QuestionsAdapter(MainActivity.this,
                             R.layout.question_list_item, question);
-                    q.insertQuestion(MainActivity.this, mJSONArr, url);
+                    q.insertQuestion(MainActivity.this, question, url);
                     Log.e("ERROR", "hello");
                     questionList.setAdapter(adapter);
                     pDialog.dismiss();

@@ -19,7 +19,7 @@ import java.util.ArrayList;
 public class QuestionORM {
 
     private static final String TAG = "QuestionORM";
-    private static final String TABLE_NAME = "question";
+    public static final String TABLE_NAME = "question";//////////////////////
     private static final String COMMA_SEP = ", ";
     private static final String COLUMN_ID_TYPE = "TEXT";
     private static final String COLUMN_ID = "id";
@@ -31,35 +31,65 @@ public class QuestionORM {
     private static final String COLUMN_VOTES = "votes";
     private static final String COLUMN_SEARCH_TYPE = "TEXT";
     private static final String COLUMN_SEARCH = "search";
-    private static SQLiteDatabase myDataBase = null;
+    //    private static SQLiteDatabase myDataBase = null;
+    private DatabaseWrapper dw;
+
+    SQLiteDatabase myDataBase;
+//    public static final String SQL_CREATE_TABLE =
+//            "CREATE TABLE " + TABLE_NAME + "("
+//                    + COLUMN_ID + " "
+//                    + COLUMN_ID_TYPE + COMMA_SEP
+//                    + COLUMN_TITLE  + " "
+//                    + COLUMN_TITLE_TYPE
+//                    + COMMA_SEP
+//                    + COLUMN_AUTHOR + " "
+//                    + COLUMN_AUTHOR_TYPE
+//                    + COMMA_SEP
+//                    + COLUMN_VOTES + " "
+//                    + COLUMN_VOTES_TYPE
+//                    + COMMA_SEP
+//                    + COLUMN_SEARCH + " "
+//                    + COLUMN_SEARCH_TYPE +
+//                    ")";
 
     public static final String SQL_CREATE_TABLE =
-            "CREATE TABLE " + TABLE_NAME + " (" +
-                    COLUMN_ID + " " + COLUMN_ID_TYPE + COMMA_SEP +
-                    COLUMN_TITLE  + " " + COLUMN_TITLE_TYPE + COMMA_SEP +
-                    COLUMN_AUTHOR + " " + COLUMN_AUTHOR_TYPE + COMMA_SEP +
-                    COLUMN_VOTES + " " + COLUMN_VOTES_TYPE + COMMA_SEP +
-                    COLUMN_SEARCH + " " + COLUMN_SEARCH_TYPE +
-                    ")";
+            "CREATE TABLE " + TABLE_NAME + "("
+                    + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT ,"
+
+                    + COLUMN_TITLE + " TEXT, "
+
+
+                    + COLUMN_AUTHOR + " TEXT, "
+
+
+                    + COLUMN_VOTES + " TEXT, "
+
+
+                    + COLUMN_SEARCH + " TEXT)";
 
     public static final String SQL_DROP_TABLE =
             "DROP TABLE IF EXISTS " + TABLE_NAME;
 
-    public void insertQuestion(Context c,JSONArray jarr,String search) throws JSONException {
+    public int insertQuestion(Context c, Question[] questions, String search) throws JSONException {
         DatabaseWrapper databaseWrapper = new DatabaseWrapper(c);
-        Log.e("ERROR2",String.valueOf(isDatabaseOpened()));
-        if(isDatabaseOpened())
-        {
-            myDataBase = databaseWrapper.getWritableDatabase();
-            ContentValues values = postToContentValues2(jarr);
-            values.put(QuestionORM.COLUMN_SEARCH,search);
-            long questionId = myDataBase.insert(QuestionORM.TABLE_NAME, null, values);
-            Log.e(TAG, "Inserted new Question with ID: " + questionId);
-            //myDataBase.close();
+        Log.e("ERROR2", String.valueOf(isDatabaseOpened()));
+        myDataBase = databaseWrapper.getWritableDatabase();
+
+        long questionId = 0;
+        if (isDatabaseOpened()) {
+
+            ContentValues values = postToContentValues2(questions);
+            values.put(QuestionORM.COLUMN_SEARCH, search);
+            questionId = myDataBase.insert(QuestionORM.TABLE_NAME, null, values);
+            Log.e(TAG, "Inserted new Question with ID: " + questions.length);
+            myDataBase.close();
         }
+        return (int) questionId;
     }
 
-    private static ContentValues postToContentValues(Question question) {
+
+    private  static ContentValues postToContentValues(Question question) {
+
         ContentValues values = new ContentValues();
         values.put(QuestionORM.COLUMN_ID, question.getID());
         values.put(QuestionORM.COLUMN_TITLE, question.getTitle());
@@ -68,29 +98,51 @@ public class QuestionORM {
         return values;
     }
 
-    private static ContentValues postToContentValues2(JSONArray jsonArray) throws JSONException {
+    private static ContentValues postToContentValues2(Question[]  questions) throws JSONException {
         ContentValues values = new ContentValues();
-        for(int i=0;i<jsonArray.length();i++)
-        {
-            JSONObject job1 = jsonArray.getJSONObject(i);
-            if(job1!=null)
-            {
-                JSONObject job2 = job1.getJSONObject("owner");
-                values.put(QuestionORM.COLUMN_ID, job1.getString("question_id"));
-                values.put(QuestionORM.COLUMN_TITLE,job1.getString("title"));
-                values.put(QuestionORM.COLUMN_AUTHOR,job2.getString("display_name"));
-                values.put(QuestionORM.COLUMN_VOTES,job1.getString("score"));
+        for (int i = 0; i < questions.length; i++) {
+            //JSONObject job1 = jsonArray.getJSONObject(i);
+            if (questions.length != 0) {
+                //JSONObject job2 = job1.getJSONObject("owner");
+                values.put(QuestionORM.COLUMN_ID, questions[i].getID());
+                values.put(QuestionORM.COLUMN_TITLE, questions[i].getTitle());
+                values.put(QuestionORM.COLUMN_AUTHOR, questions[i].getAuthor());
+                values.put(QuestionORM.COLUMN_VOTES, questions[i].getVotes());
             }
         }
         return values;
     }
 
-    public static boolean isDatabaseOpened() {
+    public  boolean isDatabaseOpened() {
         if (myDataBase == null) {
             return false;
         }
-        Log.e("OPEN",String.valueOf(myDataBase.isOpen()));
-        return myDataBase.isOpen();
+        else {
+            Log.e("OPEN", String.valueOf(myDataBase.isOpen()));
+            return myDataBase.isOpen();
+        }
 
     }
+
+
+    /*public boolean verification(String _username) throws SQLException {
+        int count = -1;
+        Cursor c = null;
+        try {
+            String query = "SELECT COUNT(*) FROM "
+                    + TABLE_NAME + " WHERE " + COLUMN_SEARCH + " = ?"
+            c = dataBase.rawQuery(query, new String[] {_username});
+            if (c.moveToFirst()) {
+                count = c.getInt(0);
+            }
+            return count > 0;
+        }
+        finally {
+            if (c != null) {
+                c.close();
+            }
+        }
+    }*/
+
+
 }

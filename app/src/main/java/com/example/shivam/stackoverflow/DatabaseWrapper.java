@@ -24,13 +24,14 @@ public class DatabaseWrapper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         Log.e(TAG, "Creating database [" + DATABASE_NAME + " v." + DATABASE_VERSION + "]...");
         db.execSQL(QuestionORM.SQL_CREATE_TABLE);
-        db.close();
+        // db.close();
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        Log.e(TAG, "Upgrading database ["+DATABASE_NAME+" v." + oldVersion+"] to ["+DATABASE_NAME+" v." + newVersion+"]...");
-        db.execSQL(QuestionORM.SQL_DROP_TABLE);
+//        Log.e(TAG, "Upgrading database ["+DATABASE_NAME+" v." + oldVersion+"] to ["+DATABASE_NAME+" v." + newVersion+"]...");
+//      db.execSQL(QuestionORM.SQL_DROP_TABLE);
+        db.execSQL("DROP TABLE IF EXISTS " +QuestionORM.TABLE_NAME);
         onCreate(db);
     }
 }
