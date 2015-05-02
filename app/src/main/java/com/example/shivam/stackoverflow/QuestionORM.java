@@ -7,6 +7,8 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -29,6 +31,7 @@ public class QuestionORM {
     private static final String COLUMN_VOTES = "votes";
     private static final String COLUMN_SEARCH_TYPE = "TEXT";
     private static final String COLUMN_SEARCH = "search";
+    private static SQLiteDatabase myDataBase = null;
 
     public static final String SQL_CREATE_TABLE =
             "CREATE TABLE " + TABLE_NAME + " (" +
@@ -42,15 +45,18 @@ public class QuestionORM {
     public static final String SQL_DROP_TABLE =
             "DROP TABLE IF EXISTS " + TABLE_NAME;
 
-    public static void insertQuestion(Context c,Question q,String search)
-    {
+    public void insertQuestion(Context c,JSONArray jarr,String search) throws JSONException {
         DatabaseWrapper databaseWrapper = new DatabaseWrapper(c);
-        SQLiteDatabase database = databaseWrapper.getWritableDatabase();
-        ContentValues values = postToContentValues(q);
-        values.put(QuestionORM.COLUMN_SEARCH,search);
-        long questionId = database.insert(QuestionORM.TABLE_NAME, "null", values);
-        Log.e(TAG, "Inserted new Question with ID: " + questionId);
-        database.close();
+        Log.e("ERROR2",String.valueOf(isDatabaseOpened()));
+        if(isDatabaseOpened())
+        {
+            myDataBase = databaseWrapper.getWritableDatabase();
+            ContentValues values = postToContentValues2(jarr);
+            values.put(QuestionORM.COLUMN_SEARCH,search);
+            long questionId = myDataBase.insert(QuestionORM.TABLE_NAME, null, values);
+            Log.e(TAG, "Inserted new Question with ID: " + questionId);
+            //myDataBase.close();
+        }
     }
 
     private static ContentValues postToContentValues(Question question) {
@@ -62,27 +68,29 @@ public class QuestionORM {
         return values;
     }
 
-    /*public boolean verification(String _username) throws SQLException {
-        int count = -1;
-        Cursor c = null;
-        try {
-            String query = "SELECT COUNT(*) FROM "
-                    + TABLE_NAME + " WHERE " + COLUMN_SEARCH + " = ?"
-            c = dataBase.rawQuery(query, new String[] {_username});
-            if (c.moveToFirst()) {
-                count = c.getInt(0);
-            }
-            return count > 0;
-        }
-        finally {
-            if (c != null) {
-                c.close();
+    private static ContentValues postToContentValues2(JSONArray jsonArray) throws JSONException {
+        ContentValues values = new ContentValues();
+        for(int i=0;i<jsonArray.length();i++)
+        {
+            JSONObject job1 = jsonArray.getJSONObject(i);
+            if(job1!=null)
+            {
+                JSONObject job2 = job1.getJSONObject("owner");
+                values.put(QuestionORM.COLUMN_ID, job1.getString("question_id"));
+                values.put(QuestionORM.COLUMN_TITLE,job1.getString("title"));
+                values.put(QuestionORM.COLUMN_AUTHOR,job2.getString("display_name"));
+                values.put(QuestionORM.COLUMN_VOTES,job1.getString("score"));
             }
         }
-    }*/
+        return values;
+    }
 
+    public static boolean isDatabaseOpened() {
+        if (myDataBase == null) {
+            return false;
+        }
+        Log.e("OPEN",String.valueOf(myDataBase.isOpen()));
+        return myDataBase.isOpen();
 
-
-
-
+    }
 }

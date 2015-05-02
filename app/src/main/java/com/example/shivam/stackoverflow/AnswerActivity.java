@@ -40,7 +40,6 @@ public class AnswerActivity extends ActionBarActivity {
     private final String endPoint = "http://api.stackexchange.com/2.2/";
     private String site = "site=stackoverflow";
     String requestUrl=null;
-    ///answers?order=desc&sort=activity&filter=!*LVw4pKRvjyBRppf&site=site=stackoverflow
     ListView answerList;
     JSONArray mJSONArr;
     AnswersAdapter adapter;
@@ -147,7 +146,6 @@ public class AnswerActivity extends ActionBarActivity {
                 Answer answers[] = new Answer[mJSONArr.length()];
                 for(int i=0;i<mJSONArr.length();i++)
                 {
-                    //String val = null;
                         ob2 = mJSONArr.getJSONObject(i);
                     if(ob2!=null) {
                         ob3 = ob2.getJSONObject("owner");
@@ -158,8 +156,7 @@ public class AnswerActivity extends ActionBarActivity {
                         R.layout.answer_list_item, answers);
                 answerList.setAdapter(adapter);
                 pDialog.dismiss();
-                //url = "https://api.stackexchange.com/2.2/search?order=desc&sort=activity&";
-            }} catch (JSONException e) {
+                }} catch (JSONException e) {
                 e.printStackTrace();
             }
         }

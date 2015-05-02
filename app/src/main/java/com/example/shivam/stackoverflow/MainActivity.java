@@ -55,15 +55,14 @@ public class MainActivity extends ActionBarActivity implements OnQueryTextListen
     String holder=null;
     TextView tv;
     QuestionsAdapter adapter;
-    //Question question[] = new Question[20];
     ListView questionList;
     ImageView img;
-    String url = "https://api.stackexchange.com/2.2/search?order=desc&sort=activity&";//intitle=android&site=stackoverflow";
+    QuestionORM q = new QuestionORM();
+    String url = "https://api.stackexchange.com/2.2/search?order=desc&sort=activity&";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        //tv = (TextView)findViewById(R.id.tv);
         questionList = (ListView)findViewById(R.id.questionList);
         tv = (TextView)findViewById(R.id.introText);
         img = (ImageView)findViewById(R.id.introImage);
@@ -154,34 +153,34 @@ public class MainActivity extends ActionBarActivity implements OnQueryTextListen
         protected void onPostExecute(JSONObject jsonObject) {
             try {
                 mJSONArr = jsonObject.getJSONArray("items");
-                /*if(mJSONArr.length()==0)
-                {
-                    pDialog.dismiss();
-                    Toast.makeText(MainActivity.this,"No questions found !",Toast.LENGTH_SHORT).show();
-                    questionList.setVisibility(View.GONE);
-                    img.setVisibility(View.VISIBLE);
-                    tv.setVisibility(View.VISIBLE);
-                }*/
-                //else {
-                    img.setVisibility(View.GONE);
+                 img.setVisibility(View.GONE);
                     tv.setVisibility(View.GONE);
                     questionList.setVisibility(View.VISIBLE);
                     Question question[] = new Question[mJSONArr.length()];
-
+                if(question.length==0)
+                {
+                    img.setVisibility(View.VISIBLE);
+                    tv.setVisibility(View.VISIBLE);
+                    questionList.setVisibility(View.GONE);
+                    Toast.makeText(MainActivity.this,"No Questions found!",Toast.LENGTH_SHORT).show();
+                    pDialog.dismiss();
+                }
+                else {
                     for (int i = 0; i < mJSONArr.length(); i++) {
                         ob2 = mJSONArr.getJSONObject(i);
                         if (ob2 != null) {
                             ob3 = ob2.getJSONObject("owner");
                             question[i] = new Question(ob2.getString("title"), ob3.getString("display_name"), ob2.getString("score"), ob2.getString("question_id"));
-                            //QuestionORM.insertQuestion(MainActivity.this,question[i],url);
                         }
                     }
                     adapter = new QuestionsAdapter(MainActivity.this,
                             R.layout.question_list_item, question);
+                    q.insertQuestion(MainActivity.this, mJSONArr, url);
+                    Log.e("ERROR", "hello");
                     questionList.setAdapter(adapter);
                     pDialog.dismiss();
                     url = "https://api.stackexchange.com/2.2/search?order=desc&sort=activity&";
-                }catch (JSONException e) {
+                } }catch (JSONException e) {
                 e.printStackTrace();
             }
         }
@@ -252,7 +251,6 @@ public class MainActivity extends ActionBarActivity implements OnQueryTextListen
 
     @Override
     public boolean onQueryTextSubmit(String s) {
-        //Toast.makeText(MainActivity.this,"You searched for "+s,Toast.LENGTH_SHORT).show();
         mSearchView.setQuery("", false);
         mSearchView.clearFocus();
         mSearchView.setIconified(true);
@@ -266,9 +264,6 @@ public class MainActivity extends ActionBarActivity implements OnQueryTextListen
         img.setVisibility(View.GONE);
         tv.setVisibility(View.GONE);
         questionList.setVisibility(View.VISIBLE);
-//        mSearchView.setQuery("", false);
-//        mSearchView.clearFocus();
-//        mSearchView.setIconified(true);
         new JSONTask().execute();
         return false;
     }

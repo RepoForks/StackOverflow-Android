@@ -56,12 +56,6 @@ public class QuestionsAdapter extends ArrayAdapter<Question> {
             holder = (QuestionHolder)row.getTag();
         }
         Question hold = data[position];
-        /*int limit = 12;
-        if (hold.name.length() > limit) {
-            holder.txtTitle.setText(hold.name.substring(0, limit)+"...");
-        } else {
-            holder.txtTitle.setText(hold.name);
-        }*/
         if(hold!=null) {
             holder.txtTitle.setText(Html.fromHtml(hold.title));
             holder.txtTitle2.setText(hold.author);
