@@ -56,16 +56,16 @@ public class QuestionORM {
             "CREATE TABLE " + TABLE_NAME + "("
                     + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT ,"
 
-                    + COLUMN_TITLE + " TEXT, "
+                    + COLUMN_TITLE + " VARCHAR, "
 
 
-                    + COLUMN_AUTHOR + " TEXT, "
+                    + COLUMN_AUTHOR + " VARCHAR, "
 
 
-                    + COLUMN_VOTES + " TEXT, "
+                    + COLUMN_VOTES + " VARCHAR, "
 
 
-                    + COLUMN_SEARCH + " TEXT)";
+                    + COLUMN_SEARCH + " VARCHAR)";
 
     public static final String SQL_DROP_TABLE =
             "DROP TABLE IF EXISTS " + TABLE_NAME;
@@ -86,6 +86,27 @@ public class QuestionORM {
         }
         return (int) questionId;
     }
+
+    public int insertQuestion3(Context c,String ids,String titles,String authors,String votes,String search)
+    {
+        DatabaseWrapper databaseWrapper = new DatabaseWrapper(c);
+        Log.e("ERROR2", String.valueOf(isDatabaseOpened()));
+        myDataBase = databaseWrapper.getWritableDatabase();
+
+        long questionId = 0;
+        if (isDatabaseOpened()) {
+            ContentValues values = new ContentValues();
+            values.put(QuestionORM.COLUMN_ID, ids);
+            values.put(QuestionORM.COLUMN_TITLE,titles);
+            values.put(QuestionORM.COLUMN_AUTHOR, authors);
+            values.put(QuestionORM.COLUMN_VOTES, votes);
+            values.put(QuestionORM.COLUMN_SEARCH, search);
+            questionId = myDataBase.insert(QuestionORM.TABLE_NAME, null, values);
+            Log.e(TAG, "Inserted new Question with ID: " + questionId);
+            myDataBase.close();
+        }
+        return (int) questionId;
+        }
 
 
     private  static ContentValues postToContentValues(Question question) {
@@ -110,6 +131,16 @@ public class QuestionORM {
                 values.put(QuestionORM.COLUMN_VOTES, questions[i].getVotes());
             }
         }
+        return values;
+    }
+
+    private static ContentValues postToContentValues3(String id,String title,String author,String vote)
+    {
+        ContentValues values = new ContentValues();
+        values.put(QuestionORM.COLUMN_ID, id);
+        values.put(QuestionORM.COLUMN_TITLE,title);
+        values.put(QuestionORM.COLUMN_AUTHOR, author);
+        values.put(QuestionORM.COLUMN_VOTES, vote);
         return values;
     }
 

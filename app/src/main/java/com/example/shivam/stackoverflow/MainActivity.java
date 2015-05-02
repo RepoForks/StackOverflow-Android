@@ -43,6 +43,7 @@ import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.zip.GZIPInputStream;
 
 
@@ -52,11 +53,14 @@ public class MainActivity extends ActionBarActivity implements OnQueryTextListen
     StringBuilder builder = new StringBuilder();
     JSONArray mJSONArr;
     JSONObject ob3,ob2,questionsJson;
+    JSONObject holdid,holdauthor,holdtitle,holdvotes;
+    ArrayList<String> ids,authors,titles,votes;
     String holder=null;
     TextView tv;
     QuestionsAdapter adapter;
     ListView questionList;
     ImageView img;
+    String val = null;
     QuestionORM q = new QuestionORM();
     String url = "https://api.stackexchange.com/2.2/search?order=desc&sort=activity&";
     @Override
@@ -66,6 +70,10 @@ public class MainActivity extends ActionBarActivity implements OnQueryTextListen
         questionList = (ListView)findViewById(R.id.questionList);
         tv = (TextView)findViewById(R.id.introText);
         img = (ImageView)findViewById(R.id.introImage);
+        ids = new ArrayList<String>(20);
+        authors = new ArrayList<String>(20);
+        titles = new ArrayList<String>(20);
+        votes = new ArrayList<String>(20);
         questionList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -171,12 +179,34 @@ public class MainActivity extends ActionBarActivity implements OnQueryTextListen
                         if (ob2 != null) {
                             ob3 = ob2.getJSONObject("owner");
                             question[i] = new Question(ob2.getString("title"), ob3.getString("display_name"), ob2.getString("score"), ob2.getString("question_id"));
+                            ids.add(ob2.getString("question_id"));
+                            authors.add(ob3.getString("display_name"));
+                            titles.add(ob2.getString("title"));
+                            votes.add(ob2.getString("score"));
                         }
                     }
                     adapter = new QuestionsAdapter(MainActivity.this,
                             R.layout.question_list_item, question);
-                    q.insertQuestion(MainActivity.this, question, url);
-                    Log.e("ERROR", "hello");
+
+                    holdid = new JSONObject();
+                    holdid.put("uniqueIDs", new JSONArray(ids));
+                    String _id = holdid.toString();
+
+                    holdauthor = new JSONObject();
+                    holdauthor.put("uniqueAuthors",new JSONArray(authors));
+                    String _auth = holdauthor.toString();
+
+                    holdtitle = new JSONObject();
+                    holdtitle.put("uniqueTitles",new JSONArray(titles));
+                    String _title = holdtitle.toString();
+
+                    holdvotes = new JSONObject();
+                    holdvotes.put("uniqueVotes",new JSONArray(votes));
+                    String _vote = holdvotes.toString();
+                    Log.e("VALUE",_vote);
+
+                    //q.insertQuestion(MainActivity.this, question, url);
+                    q.insertQuestion3(MainActivity.this,_id,_title,_auth,_vote,val);
                     questionList.setAdapter(adapter);
                     pDialog.dismiss();
                     url = "https://api.stackexchange.com/2.2/search?order=desc&sort=activity&";
@@ -259,6 +289,7 @@ public class MainActivity extends ActionBarActivity implements OnQueryTextListen
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
+        val = s;
 
         url+="intitle="+s+"&site=stackoverflow";
         img.setVisibility(View.GONE);
