@@ -31,6 +31,7 @@ public class QuestionORM {
     private static final String COLUMN_VOTES = "votes";
     private static final String COLUMN_SEARCH_TYPE = "TEXT";
     private static final String COLUMN_SEARCH = "search";
+    private static final String KEY_PRIMARY = "pk";
     //    private static SQLiteDatabase myDataBase = null;
     private DatabaseWrapper dw;
 
@@ -54,18 +55,19 @@ public class QuestionORM {
 
     public static final String SQL_CREATE_TABLE =
             "CREATE TABLE " + TABLE_NAME + "("
-                    + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT ,"
+                    + KEY_PRIMARY + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+                    + COLUMN_ID + " TEXT, "
 
-                    + COLUMN_TITLE + " VARCHAR, "
-
-
-                    + COLUMN_AUTHOR + " VARCHAR, "
+                    + COLUMN_TITLE + " TEXT, "
 
 
-                    + COLUMN_VOTES + " VARCHAR, "
+                    + COLUMN_AUTHOR + " TEXT, "
 
 
-                    + COLUMN_SEARCH + " VARCHAR)";
+                    + COLUMN_VOTES + " TEXT, "
+
+
+                    + COLUMN_SEARCH + " TEXT)";
 
     public static final String SQL_DROP_TABLE =
             "DROP TABLE IF EXISTS " + TABLE_NAME;
@@ -101,7 +103,7 @@ public class QuestionORM {
             values.put(QuestionORM.COLUMN_AUTHOR, authors);
             values.put(QuestionORM.COLUMN_VOTES, votes);
             values.put(QuestionORM.COLUMN_SEARCH, search);
-            questionId = myDataBase.insert(QuestionORM.TABLE_NAME, null, values);
+            questionId = myDataBase.insert(QuestionORM.TABLE_NAME, "null", values);
             Log.e(TAG, "Inserted new Question with ID: " + questionId);
             myDataBase.close();
         }

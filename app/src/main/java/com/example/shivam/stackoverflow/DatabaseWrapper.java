@@ -12,7 +12,7 @@ import android.util.Log;
 public class DatabaseWrapper extends SQLiteOpenHelper {
 
     private static final String TAG = "DatabaseWrapper";
-    private static final String DATABASE_NAME = "MyDatabase.db";
+    private static final String DATABASE_NAME = "QuestionDatabase.db";
     private static final int DATABASE_VERSION = 1;
 
 
