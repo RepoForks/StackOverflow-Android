@@ -67,7 +67,7 @@ public class QuestionORM {
                     + COLUMN_VOTES + " TEXT, "
 
 
-                    + COLUMN_SEARCH + " TEXT)";
+                    + COLUMN_SEARCH + " TEXT UNIQUE)";
 
     public static final String SQL_DROP_TABLE =
             "DROP TABLE IF EXISTS " + TABLE_NAME;
@@ -109,6 +109,83 @@ public class QuestionORM {
         }
         return (int) questionId;
         }
+
+    public boolean doesExist(Context c,String search)
+    {
+        DatabaseWrapper databaseWrapper = new DatabaseWrapper(c);
+        myDataBase = databaseWrapper.getWritableDatabase();
+        //Cursor cur = myDataBase.rawQuery("SELECT * FROM "+TABLE_NAME+" WHERE "+COLUMN_SEARCH+" = "+search,null);
+        Cursor cur = myDataBase.rawQuery("SELECT * FROM question WHERE search"+ "= '" + search + "'",null);
+        if(cur.getCount()>0)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    public ArrayList<String> getTitleDetails(Context c,String search) throws JSONException {
+        DatabaseWrapper databaseWrapper = new DatabaseWrapper(c);
+        myDataBase = databaseWrapper.getWritableDatabase();
+        ArrayList<String> items = new ArrayList<String>();
+        Cursor cur = myDataBase.rawQuery("SELECT * FROM question WHERE search"+ "= '" + search + "'",null);
+        JSONObject json = new JSONObject(cur.getString(cur.getColumnIndex("search")));
+        JSONArray jarr = json.optJSONArray("uniqueTitles");
+        for(int i=0;i<jarr.length();i++)
+        {
+            items.add(jarr.getString(i));
+        }
+        return items;
+    }
+
+    public ArrayList<String> getAuthorDetails(Context c,String search) throws JSONException {
+        DatabaseWrapper databaseWrapper = new DatabaseWrapper(c);
+        myDataBase = databaseWrapper.getWritableDatabase();
+        ArrayList<String> items = new ArrayList<String>();
+        Cursor cur = myDataBase.rawQuery("SELECT * FROM question WHERE search"+ "= '" + search + "'",null);
+        JSONObject json = new JSONObject(cur.getString(cur.getColumnIndex("search")));
+        JSONArray jarr = json.optJSONArray("uniqueAuthors");
+        for(int i=0;i<jarr.length();i++)
+        {
+            items.add(jarr.getString(i));
+        }
+        return items;
+    }
+
+    public ArrayList<String> getVoteDetails(Context c,String search) throws JSONException {
+        DatabaseWrapper databaseWrapper = new DatabaseWrapper(c);
+        myDataBase = databaseWrapper.getWritableDatabase();
+        ArrayList<String> items = new ArrayList<String>();
+        Cursor cur = myDataBase.rawQuery("SELECT * FROM question WHERE search"+ "= '" + search + "'",null);
+        JSONObject json = new JSONObject(cur.getString(cur.getColumnIndex("search")));
+        JSONArray jarr = json.optJSONArray("uniqueVotes");
+        for(int i=0;i<jarr.length();i++)
+        {
+            items.add(jarr.getString(i));
+        }
+        return items;
+    }
+
+    public ArrayList<String> getIDDetails(Context c,String search) throws JSONException {
+        DatabaseWrapper databaseWrapper = new DatabaseWrapper(c);
+        myDataBase = databaseWrapper.getWritableDatabase();
+        ArrayList<String> items = new ArrayList<String>();
+        Cursor cur = myDataBase.rawQuery("SELECT * FROM question WHERE search"+ "= '" + search + "'",null);
+        JSONObject json = new JSONObject(cur.getString(cur.getColumnIndex("search")));
+        JSONArray jarr = json.optJSONArray("uniqueIDs");
+        for(int i=0;i<jarr.length();i++)
+        {
+            items.add(jarr.getString(i));
+        }
+        return items;
+    }
+
+
+
+
+
 
 
     private  static ContentValues postToContentValues(Question question) {

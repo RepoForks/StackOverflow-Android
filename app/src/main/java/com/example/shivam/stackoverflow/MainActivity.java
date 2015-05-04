@@ -58,12 +58,15 @@ public class MainActivity extends ActionBarActivity implements OnQueryTextListen
     JSONObject ob3,ob2,questionsJson;
     JSONObject holdid,holdauthor,holdtitle,holdvotes;
     ArrayList<String> ids,authors,titles,votes;
+    ArrayList<String> sqlids,sqlauthors,sqltitles,sqlvotes;
+    ArrayList<ArrayList<String>> listHolder = new ArrayList<ArrayList<String>>();
     String holder=null;
     TextView tv;
     QuestionsAdapter adapter;
     ListView questionList;
     ImageView img;
     String val = null;
+    boolean exists;
     QuestionORM q = new QuestionORM();
     String url = "https://api.stackexchange.com/2.2/search?order=desc&sort=activity&";
     @Override
@@ -92,69 +95,7 @@ public class MainActivity extends ActionBarActivity implements OnQueryTextListen
 
     }
 
-    public JSONObject makeRequest2(String url) throws IOException, JSONException {
-        JSONObject json,obj;
-        json = new JSONObject();
-        try {
-            json = new JSONObject(EntityUtils.toString(new DefaultHttpClient().execute(new HttpGet(url)).getEntity()));
-            //obj = json.getJSONObject("ROOT_ELEMENT");
-        }
-        catch (JSONException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return json;
-    }
 
-    public JSONObject getJSONFromUrl(String url) {
-
-         InputStream is = null;
-         JSONObject jObj = null;
-         String json = "";
-        // make HTTP request
-        try {
-
-            DefaultHttpClient httpClient = new DefaultHttpClient();
-            HttpPost httpPost = new HttpPost(url);
-
-            HttpResponse httpResponse = httpClient.execute(httpPost);
-            HttpEntity httpEntity = httpResponse.getEntity();
-            is = httpEntity.getContent();
-
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        } catch (ClientProtocolException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        try {
-
-            BufferedReader reader = new BufferedReader(new InputStreamReader(is, "iso-8859-1"), 8);
-            StringBuilder sb = new StringBuilder();
-            String line = null;
-            while ((line = reader.readLine()) != null) {
-                sb.append(line + "n");
-            }
-            is.close();
-            json = sb.toString();
-
-        } catch (Exception e) {
-            Log.e("TEST1", "Error converting result " + e.toString());
-        }
-
-        // try parse the string to a JSON object
-        try {
-            jObj = new JSONObject(json);
-        } catch (JSONException e) {
-            Log.e("TEST2", "Error parsing data " + e.toString());
-        }
-
-        // return JSON String
-        return jObj;
-    }
 
     public JSONObject makeRequest(String url) throws IOException, JSONException {
 
@@ -287,6 +228,44 @@ public class MainActivity extends ActionBarActivity implements OnQueryTextListen
         }
     }
 
+    public class SQLTask extends AsyncTask<String,String,ArrayList<ArrayList<String>>>
+    {
+
+        private ProgressDialog pDialog;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            pDialog = new ProgressDialog(MainActivity.this);
+            pDialog.setMessage("Getting Data ...");
+            pDialog.setIndeterminate(false);
+            pDialog.setCancelable(true);
+            pDialog.show();
+        }
+
+        @Override
+        protected ArrayList<ArrayList<String>> doInBackground(String... params) {
+            try {
+                sqlauthors = q.getAuthorDetails(MainActivity.this,val);
+                sqlids = q.getIDDetails(MainActivity.this,val);
+                sqltitles = q.getTitleDetails(MainActivity.this,val);
+                sqlvotes = q.getVoteDetails(MainActivity.this,val);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            listHolder.add(sqlids);
+            listHolder.add(sqltitles);
+            listHolder.add(sqlauthors);
+            listHolder.add(sqlvotes);
+            return listHolder;
+        }
+
+        @Override
+        protected void onPostExecute(ArrayList<ArrayList<String>> arrayLists) {
+            super.onPostExecute(arrayLists);
+        }
+    }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -361,12 +340,20 @@ public class MainActivity extends ActionBarActivity implements OnQueryTextListen
             e.printStackTrace();
         }
         val = s;
+        exists = q.doesExist(MainActivity.this, val);
+        Log.e("EXISTS",String.valueOf(exists));
 
         url+="intitle="+s+"&site=stackoverflow";
         img.setVisibility(View.GONE);
         tv.setVisibility(View.GONE);
         questionList.setVisibility(View.VISIBLE);
-        new JSONTask().execute();
+        if(exists==true)
+        {
+            new SQLTask().execute();
+        }
+        else {
+            new JSONTask().execute();
+        }
         return false;
     }
 
