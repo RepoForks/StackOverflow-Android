@@ -57,7 +57,7 @@ public class AnswersAdapter extends ArrayAdapter<Answer> {
         if(hold!=null) {
             holder.txtTitle.setText(Html.fromHtml(hold.text));
             holder.txtTitle2.setText(hold.author);
-            holder.txtTitle3.setText(hold.votes);
+            holder.txtTitle3.setText(hold.votes+" votes");
         }
         return row;
     }

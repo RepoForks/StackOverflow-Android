@@ -55,8 +55,7 @@ public class QuestionORM {
             "DROP TABLE IF EXISTS " + TABLE_NAME;
 
 
-    public int insertQuestion3(Context c,String ids,String titles,String authors,String votes,String search)
-    {
+    public int insertQuestion3(Context c, String ids, String titles, String authors, String votes, String search) {
         DatabaseWrapper databaseWrapper = new DatabaseWrapper(c);
         Log.e("ERROR2", String.valueOf(isDatabaseOpened()));
         myDataBase = databaseWrapper.getWritableDatabase();
@@ -65,7 +64,7 @@ public class QuestionORM {
         if (isDatabaseOpened()) {
             ContentValues values = new ContentValues();
             values.put(QuestionORM.COLUMN_ID, ids);
-            values.put(QuestionORM.COLUMN_TITLE,titles);
+            values.put(QuestionORM.COLUMN_TITLE, titles);
             values.put(QuestionORM.COLUMN_AUTHOR, authors);
             values.put(QuestionORM.COLUMN_VOTES, votes);
             values.put(QuestionORM.COLUMN_SEARCH, search);
@@ -74,87 +73,95 @@ public class QuestionORM {
             myDataBase.close();
         }
         return (int) questionId;
-        }
+    }
 
-    public boolean doesExist(Context c,String search)
-    {
+    public boolean doesExist(Context c, String search) {
         DatabaseWrapper databaseWrapper = new DatabaseWrapper(c);
         myDataBase = databaseWrapper.getWritableDatabase();
-        //Cursor cur = myDataBase.rawQuery("SELECT * FROM "+TABLE_NAME+" WHERE "+COLUMN_SEARCH+" = "+search,null);
-        Cursor cur = myDataBase.rawQuery("SELECT * FROM question WHERE search"+ "= '" + search + "'"+" COLLATE NOCASE",null);
-        if(cur.getCount()>0)
-        {
+        Cursor cur = myDataBase.rawQuery("SELECT * FROM question WHERE search" + "= '" + search.trim() + "'" + " COLLATE NOCASE", null);
+        if (cur.getCount() > 0) {
             return true;
-        }
-        else
-        {
+        } else {
             return false;
         }
     }
 
-    public ArrayList<String> getTitleDetails(Context c,String search) throws JSONException {
+    public ArrayList<String> getTitleDetails(Context c, String search) throws JSONException {
         DatabaseWrapper databaseWrapper = new DatabaseWrapper(c);
         myDataBase = databaseWrapper.getWritableDatabase();
         ArrayList<String> items = new ArrayList<String>();
-        Cursor cur = myDataBase.rawQuery("SELECT * FROM question WHERE search"+ "= '" + search + "'",null);
-        cur.moveToFirst();
-        JSONObject json = new JSONObject(cur.getString(2));
-        JSONArray jarr = json.optJSONArray("uniqueTitles");
-        for(int i=0;i<jarr.length();i++)
-        {
-            items.add(jarr.getString(i));
+        Cursor cur = myDataBase.rawQuery("SELECT * FROM question WHERE search" + "= '" + search.trim() + "'"+ " COLLATE NOCASE", null);
+        for(cur.moveToFirst();!cur.isAfterLast();cur.moveToNext()) {
+            if(cur.getString(5).trim().equalsIgnoreCase(search.trim())) {
+                JSONObject json = new JSONObject(cur.getString(2));
+                JSONArray jarr = json.optJSONArray("uniqueTitles");
+                for (int i = 0; i < jarr.length(); i++) {
+                    items.add(jarr.getString(i));
+                }
+            }
         }
+        cur.moveToFirst();
         return items;
+
     }
 
-    public ArrayList<String> getAuthorDetails(Context c,String search) throws JSONException {
+    public ArrayList<String> getAuthorDetails(Context c, String search) throws JSONException {
         DatabaseWrapper databaseWrapper = new DatabaseWrapper(c);
         myDataBase = databaseWrapper.getWritableDatabase();
         ArrayList<String> items = new ArrayList<String>();
-        Cursor cur = myDataBase.rawQuery("SELECT * FROM question WHERE search"+ "= '" + search + "'",null);
-        cur.moveToFirst();
-        JSONObject json = new JSONObject(cur.getString(3));
-        System.out.println(json);
-        JSONArray jarr = json.optJSONArray("uniqueAuthors");
-        for(int i=0;i<jarr.length();i++)
-        {
-            items.add(jarr.getString(i));
+        Cursor cur = myDataBase.rawQuery("SELECT * FROM question WHERE search" + "= '" + search.trim() + "'"+ " COLLATE NOCASE", null);
+        for(cur.moveToFirst();!cur.isAfterLast();cur.moveToNext()) {
+            if(cur.getString(5).trim().equalsIgnoreCase(search.trim())) {
+                JSONObject json = new JSONObject(cur.getString(3));
+                JSONArray jarr = json.optJSONArray("uniqueAuthors");
+                for (int i = 0; i < jarr.length(); i++) {
+                    items.add(jarr.getString(i));
+                }
+            }
         }
+        cur.moveToFirst();
         return items;
     }
 
-    public ArrayList<String> getVoteDetails(Context c,String search) throws JSONException {
+    public ArrayList<String> getVoteDetails(Context c, String search) throws JSONException {
         DatabaseWrapper databaseWrapper = new DatabaseWrapper(c);
         myDataBase = databaseWrapper.getWritableDatabase();
         ArrayList<String> items = new ArrayList<String>();
-        Cursor cur = myDataBase.rawQuery("SELECT * FROM question WHERE search"+ "= '" + search + "'",null);
-        cur.moveToFirst();
-        JSONObject json = new JSONObject(cur.getString(4));
-        JSONArray jarr = json.optJSONArray("uniqueVotes");
-        for(int i=0;i<jarr.length();i++)
-        {
-            items.add(jarr.getString(i));
+        Cursor cur = myDataBase.rawQuery("SELECT * FROM question WHERE search" + "= '" + search.trim() + "'"+ " COLLATE NOCASE", null);
+        for(cur.moveToFirst();!cur.isAfterLast();cur.moveToNext()) {
+            if (cur.getString(5).trim().equalsIgnoreCase(search.trim())) {
+                JSONObject json = new JSONObject(cur.getString(4));
+                JSONArray jarr = json.optJSONArray("uniqueVotes");
+                for (int i = 0; i < jarr.length(); i++) {
+                    items.add(jarr.getString(i));
+                }
+            }
         }
+        cur.moveToFirst();
         return items;
     }
 
-    public ArrayList<String> getIDDetails(Context c,String search) throws JSONException {
+    public ArrayList<String> getIDDetails(Context c, String search) throws JSONException {
         DatabaseWrapper databaseWrapper = new DatabaseWrapper(c);
         myDataBase = databaseWrapper.getWritableDatabase();
         ArrayList<String> items = new ArrayList<String>();
-        Cursor cur = myDataBase.rawQuery("SELECT * FROM question WHERE search"+ "= '" + search + "'",null);
-        cur.moveToFirst();
-        JSONObject json = new JSONObject(cur.getString(1));
-
-        JSONArray jarr = json.optJSONArray("uniqueIDs");
-        for(int i=0;i<jarr.length();i++)
-        {
-            items.add(jarr.getString(i));
+        Cursor cur = myDataBase.rawQuery("SELECT * FROM question WHERE search" + "= '" + search.trim() + "'"+ " COLLATE NOCASE", null);
+        //cur.moveToFirst();
+      //  System.out.println(cur.getString(1));
+        for(cur.moveToFirst();!cur.isAfterLast();cur.moveToNext()) {
+            if (cur.getString(5).trim().equalsIgnoreCase(search.trim())) {
+                JSONObject json = new JSONObject(cur.getString(1));
+                JSONArray jarr = json.optJSONArray("uniqueIDs");
+                for (int i = 0; i < jarr.length(); i++) {
+                    items.add(jarr.getString(i));
+                }
+            }
         }
+        cur.moveToFirst();
         return items;
     }
 
-    private static ContentValues postToContentValues2(Question[]  questions) throws JSONException {
+    private static ContentValues postToContentValues2(Question[] questions) throws JSONException {
         ContentValues values = new ContentValues();
         for (int i = 0; i < questions.length; i++) {
             if (questions.length != 0) {
@@ -169,11 +176,10 @@ public class QuestionORM {
     }
 
 
-    public  boolean isDatabaseOpened() {
+    public boolean isDatabaseOpened() {
         if (myDataBase == null) {
             return false;
-        }
-        else {
+        } else {
             Log.e("OPEN", String.valueOf(myDataBase.isOpen()));
             return myDataBase.isOpen();
         }

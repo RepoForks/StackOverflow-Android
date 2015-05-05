@@ -71,7 +71,7 @@ public class OfflineAdapter extends BaseAdapter {
         }
             holder.txtTitle.setText(Html.fromHtml(title.get(position)));
             holder.txtTitle2.setText(author.get(position));
-            holder.txtTitle3.setText(vote.get(position));
+            holder.txtTitle3.setText(vote.get(position)+" votes");
             holder.txtTitle4.setText(qid.get(position));
         return row;
     }

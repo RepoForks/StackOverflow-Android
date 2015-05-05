@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
-import android.media.Image;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
@@ -62,8 +61,6 @@ public class MainActivity extends ActionBarActivity implements OnQueryTextListen
     JSONArray mJSONArr;
     JSONObject ob3,ob2,questionsJson;
     JSONObject holdid,holdauthor,holdtitle,holdvotes;
-    ArrayList<String> ids,authors,titles,votes;
-    ArrayList<String> sqlids,sqlauthors,sqltitles,sqlvotes;
     ArrayList<ArrayList<String>> listHolder = new ArrayList<ArrayList<String>>();
     String holder=null;
     TextView tv;
@@ -71,7 +68,8 @@ public class MainActivity extends ActionBarActivity implements OnQueryTextListen
     OfflineAdapter adapter2;
     ListView questionList;
     ImageView img;
-    String val = null;
+    String val;
+    ArrayList<String> sqlids,sqlauthors,sqltitles,sqlvotes;
     boolean exists;
     QuestionORM q = new QuestionORM();
     String url = "https://api.stackexchange.com/2.2/search?order=desc&sort=activity&";
@@ -79,13 +77,14 @@ public class MainActivity extends ActionBarActivity implements OnQueryTextListen
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        sqlids = new ArrayList<>(20);
+        sqlauthors = new ArrayList<>(20);
+        sqltitles = new ArrayList<>(20);
+        sqlvotes = new ArrayList<>(20);
+
         questionList = (ListView)findViewById(R.id.questionList);
         tv = (TextView)findViewById(R.id.introText);
         img = (ImageView)findViewById(R.id.introImage);
-        ids = new ArrayList<String>(20);
-        authors = new ArrayList<String>(20);
-        titles = new ArrayList<String>(20);
-        votes = new ArrayList<String>(20);
         questionList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -182,6 +181,11 @@ public class MainActivity extends ActionBarActivity implements OnQueryTextListen
         protected void onPostExecute(JSONObject jsonObject) {
             if (jsonObject != null) {
                 try {
+                    ArrayList<String> ids,authors,titles,votes;
+                    ids = new ArrayList<String>(20);
+                    authors = new ArrayList<String>(20);
+                    titles = new ArrayList<String>(20);
+                    votes = new ArrayList<String>(20);
                     mJSONArr = jsonObject.getJSONArray("items");
                     img.setVisibility(View.GONE);
                     tv.setVisibility(View.GONE);
@@ -266,27 +270,34 @@ public class MainActivity extends ActionBarActivity implements OnQueryTextListen
             } catch (JSONException e) {
                 e.printStackTrace();
             }
+            //System.out.println(sqltitles);
             listHolder.add(sqlids);
             listHolder.add(sqltitles);
             listHolder.add(sqlauthors);
             listHolder.add(sqlvotes);
+            val = null;
             return listHolder;
         }
 
         @Override
         protected void onPostExecute(ArrayList<ArrayList<String>> arrayLists) {
-            ArrayList<String> ids = arrayLists.get(0);
-            ArrayList<String> title = arrayLists.get(1);
-            ArrayList<String> author = arrayLists.get(2);
-            ArrayList<String> vote = arrayLists.get(3);
+            //System.out.println(listHolder.get(1));
+            //System.out.println(sqltitles);
+            ArrayList<String> ids = sqlids;
+            ArrayList<String> title = sqltitles;
+            ArrayList<String> author = sqlauthors;
+            ArrayList<String> vote = sqlvotes;
+            //System.out.println(title);
             img.setVisibility(View.GONE);
             tv.setVisibility(View.GONE);
             questionList.setVisibility(View.VISIBLE);
             adapter2 = new OfflineAdapter(MainActivity.this,R.layout.question_list_item,ids,author,title,vote);
             questionList.setAdapter(adapter2);
             pDialog.dismiss();
+            val = null;
             Toast.makeText(MainActivity.this,"Loaded from DB",Toast.LENGTH_SHORT).show();
-            url = "https://api.stackexchange.com/2.2/search?order=desc&sort=activity&";
+            //Log.e("NEWSTRING","value is"+val+" and nothing");
+            //url = "https://api.stackexchange.com/2.2/search?order=desc&sort=activity&";
 
         }
     }
@@ -328,16 +339,20 @@ public class MainActivity extends ActionBarActivity implements OnQueryTextListen
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
-        val = s;
+        Log.e("STRING",s);
+        val = s.trim();
+        Log.e("VAL",val);
         exists = q.doesExist(MainActivity.this, val);
         Log.e("EXISTS",String.valueOf(exists));
 
         url+="intitle="+s+"&site=stackoverflow";
         img.setVisibility(View.GONE);
         tv.setVisibility(View.GONE);
+
         questionList.setVisibility(View.VISIBLE);
         if(exists==true)
         {
+            //Toast.makeText(MainActivity.this,val,Toast.LENGTH_SHORT).show();
             new SQLTask().execute();
         }
         else {
