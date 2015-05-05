@@ -132,7 +132,7 @@ public class QuestionORM {
         ArrayList<String> items = new ArrayList<String>();
         Cursor cur = myDataBase.rawQuery("SELECT * FROM question WHERE search"+ "= '" + search + "'",null);
         cur.moveToFirst();
-        JSONObject json = new JSONObject(cur.getString(cur.getColumnIndex("search")));
+        JSONObject json = new JSONObject(cur.getString(2));
         JSONArray jarr = json.optJSONArray("uniqueTitles");
         for(int i=0;i<jarr.length();i++)
         {
@@ -147,10 +147,14 @@ public class QuestionORM {
         ArrayList<String> items = new ArrayList<String>();
         Cursor cur = myDataBase.rawQuery("SELECT * FROM question WHERE search"+ "= '" + search + "'",null);
         cur.moveToFirst();
-        Log.e("COUNT",String.valueOf(cur.getCount()));
+        //Log.e("CURSOR",cur.getString(2));
+        //Log.e("COUNT",String.valueOf(cur.getCount()));
 //        Log.e("SEARCH",cur.getString(cur.getColumnIndex("search")));
-        JSONObject json = new JSONObject(cur.getString(cur.getColumnIndex("search")));
+        JSONObject json = new JSONObject(cur.getString(3));
+        System.out.println(json);
         JSONArray jarr = json.optJSONArray("uniqueAuthors");
+        Log.e("ERROR2",String.valueOf(jarr));
+        //System.out.println(jarr);
         for(int i=0;i<jarr.length();i++)
         {
             items.add(jarr.getString(i));
@@ -164,7 +168,7 @@ public class QuestionORM {
         ArrayList<String> items = new ArrayList<String>();
         Cursor cur = myDataBase.rawQuery("SELECT * FROM question WHERE search"+ "= '" + search + "'",null);
         cur.moveToFirst();
-        JSONObject json = new JSONObject(cur.getString(cur.getColumnIndex("search")));
+        JSONObject json = new JSONObject(cur.getString(4));
         JSONArray jarr = json.optJSONArray("uniqueVotes");
         for(int i=0;i<jarr.length();i++)
         {
@@ -180,7 +184,7 @@ public class QuestionORM {
         Cursor cur = myDataBase.rawQuery("SELECT * FROM question WHERE search"+ "= '" + search + "'",null);
         cur.moveToFirst();
         Log.e("COUNT",String.valueOf(cur.getCount()));
-        JSONObject json = new JSONObject(cur.getString(cur.getColumnIndex("search")));
+        JSONObject json = new JSONObject(cur.getString(1));
 
         JSONArray jarr = json.optJSONArray("uniqueIDs");
         for(int i=0;i<jarr.length();i++)
@@ -189,12 +193,6 @@ public class QuestionORM {
         }
         return items;
     }
-
-
-
-
-
-
 
     private  static ContentValues postToContentValues(Question question) {
 
@@ -221,15 +219,6 @@ public class QuestionORM {
         return values;
     }
 
-    private static ContentValues postToContentValues3(String id,String title,String author,String vote)
-    {
-        ContentValues values = new ContentValues();
-        values.put(QuestionORM.COLUMN_ID, id);
-        values.put(QuestionORM.COLUMN_TITLE,title);
-        values.put(QuestionORM.COLUMN_AUTHOR, author);
-        values.put(QuestionORM.COLUMN_VOTES, vote);
-        return values;
-    }
 
     public  boolean isDatabaseOpened() {
         if (myDataBase == null) {
@@ -241,26 +230,5 @@ public class QuestionORM {
         }
 
     }
-
-
-    /*public boolean verification(String _username) throws SQLException {
-        int count = -1;
-        Cursor c = null;
-        try {
-            String query = "SELECT COUNT(*) FROM "
-                    + TABLE_NAME + " WHERE " + COLUMN_SEARCH + " = ?"
-            c = dataBase.rawQuery(query, new String[] {_username});
-            if (c.moveToFirst()) {
-                count = c.getInt(0);
-            }
-            return count > 0;
-        }
-        finally {
-            if (c != null) {
-                c.close();
-            }
-        }
-    }*/
-
 
 }

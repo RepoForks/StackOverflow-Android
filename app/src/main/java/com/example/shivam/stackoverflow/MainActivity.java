@@ -264,8 +264,12 @@ public class MainActivity extends ActionBarActivity implements OnQueryTextListen
 
         @Override
         protected void onPostExecute(ArrayList<ArrayList<String>> arrayLists) {
+            Log.e("SIZE",String.valueOf(arrayLists.size()));
+            System.out.println(arrayLists);
             ArrayList<String> ids = arrayLists.get(0);
             ArrayList<String> title = arrayLists.get(1);
+            //System.out.print(title);
+            Log.e("TITLE",String.valueOf(title.size()));
             ArrayList<String> author = arrayLists.get(2);
             ArrayList<String> vote = arrayLists.get(3);
             img.setVisibility(View.GONE);
@@ -276,7 +280,7 @@ public class MainActivity extends ActionBarActivity implements OnQueryTextListen
             pDialog.dismiss();
             Toast.makeText(MainActivity.this,"Loaded from DB",Toast.LENGTH_SHORT).show();
             url = "https://api.stackexchange.com/2.2/search?order=desc&sort=activity&";
-            
+
         }
     }
 
