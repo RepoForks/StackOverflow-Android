@@ -44,6 +44,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Array;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.util.ArrayList;
@@ -63,6 +64,7 @@ public class MainActivity extends ActionBarActivity implements OnQueryTextListen
     String holder=null;
     TextView tv;
     QuestionsAdapter adapter;
+    OfflineAdapter adapter2;
     ListView questionList;
     ImageView img;
     String val = null;
@@ -262,7 +264,19 @@ public class MainActivity extends ActionBarActivity implements OnQueryTextListen
 
         @Override
         protected void onPostExecute(ArrayList<ArrayList<String>> arrayLists) {
-            super.onPostExecute(arrayLists);
+            ArrayList<String> ids = arrayLists.get(0);
+            ArrayList<String> title = arrayLists.get(1);
+            ArrayList<String> author = arrayLists.get(2);
+            ArrayList<String> vote = arrayLists.get(3);
+            img.setVisibility(View.GONE);
+            tv.setVisibility(View.GONE);
+            questionList.setVisibility(View.VISIBLE);
+            adapter2 = new OfflineAdapter(MainActivity.this,R.layout.question_list_item,ids,author,title,vote);
+            questionList.setAdapter(adapter2);
+            pDialog.dismiss();
+            Toast.makeText(MainActivity.this,"Loaded from DB",Toast.LENGTH_SHORT).show();
+            url = "https://api.stackexchange.com/2.2/search?order=desc&sort=activity&";
+            
         }
     }
 

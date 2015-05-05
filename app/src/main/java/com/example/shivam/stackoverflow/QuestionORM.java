@@ -131,6 +131,7 @@ public class QuestionORM {
         myDataBase = databaseWrapper.getWritableDatabase();
         ArrayList<String> items = new ArrayList<String>();
         Cursor cur = myDataBase.rawQuery("SELECT * FROM question WHERE search"+ "= '" + search + "'",null);
+        cur.moveToFirst();
         JSONObject json = new JSONObject(cur.getString(cur.getColumnIndex("search")));
         JSONArray jarr = json.optJSONArray("uniqueTitles");
         for(int i=0;i<jarr.length();i++)
@@ -145,6 +146,9 @@ public class QuestionORM {
         myDataBase = databaseWrapper.getWritableDatabase();
         ArrayList<String> items = new ArrayList<String>();
         Cursor cur = myDataBase.rawQuery("SELECT * FROM question WHERE search"+ "= '" + search + "'",null);
+        cur.moveToFirst();
+        Log.e("COUNT",String.valueOf(cur.getCount()));
+//        Log.e("SEARCH",cur.getString(cur.getColumnIndex("search")));
         JSONObject json = new JSONObject(cur.getString(cur.getColumnIndex("search")));
         JSONArray jarr = json.optJSONArray("uniqueAuthors");
         for(int i=0;i<jarr.length();i++)
@@ -159,6 +163,7 @@ public class QuestionORM {
         myDataBase = databaseWrapper.getWritableDatabase();
         ArrayList<String> items = new ArrayList<String>();
         Cursor cur = myDataBase.rawQuery("SELECT * FROM question WHERE search"+ "= '" + search + "'",null);
+        cur.moveToFirst();
         JSONObject json = new JSONObject(cur.getString(cur.getColumnIndex("search")));
         JSONArray jarr = json.optJSONArray("uniqueVotes");
         for(int i=0;i<jarr.length();i++)
@@ -173,7 +178,10 @@ public class QuestionORM {
         myDataBase = databaseWrapper.getWritableDatabase();
         ArrayList<String> items = new ArrayList<String>();
         Cursor cur = myDataBase.rawQuery("SELECT * FROM question WHERE search"+ "= '" + search + "'",null);
+        cur.moveToFirst();
+        Log.e("COUNT",String.valueOf(cur.getCount()));
         JSONObject json = new JSONObject(cur.getString(cur.getColumnIndex("search")));
+
         JSONArray jarr = json.optJSONArray("uniqueIDs");
         for(int i=0;i<jarr.length();i++)
         {
