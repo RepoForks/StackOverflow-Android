@@ -28,7 +28,6 @@ public class OfflineAdapter extends BaseAdapter {
     public OfflineAdapter(Context c,int layoutResourceId,ArrayList<String> qid,ArrayList<String> author,ArrayList<String> title,ArrayList<String> vote)
     {
 
-        //super(c,layoutResourceId,qid,author,title,vote);
         this.context = c;
         this.layoutResourceId = layoutResourceId;
         this.qid = qid;
@@ -70,13 +69,10 @@ public class OfflineAdapter extends BaseAdapter {
         {
             holder = (QuestionHolder)row.getTag();
         }
-        //Question hold = data[position];
-        //if(hold!=null) {
             holder.txtTitle.setText(Html.fromHtml(title.get(position)));
             holder.txtTitle2.setText(author.get(position));
             holder.txtTitle3.setText(vote.get(position));
             holder.txtTitle4.setText(qid.get(position));
-        //}
         return row;
     }
 

@@ -1,8 +1,11 @@
 package com.example.shivam.stackoverflow;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBarActivity;
@@ -64,8 +67,26 @@ public class AnswerActivity extends ActionBarActivity {
         Drawable d=r.getDrawable(R.color.primary);
         getSupportActionBar().setBackgroundDrawable(d);
         Log.e("URL",requestUrl);
-        new JSONTask().execute();
+        if(isNetworkAvailable()) {
+            new JSONTask().execute();
+        }
+        else
+        {
+            Toast.makeText(AnswerActivity.this,"Internet Connection is needed to view Answers!",Toast.LENGTH_SHORT).show();
+        }
     }
+
+    public boolean isNetworkAvailable() {
+        ConnectivityManager cm = (ConnectivityManager)
+                getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = cm.getActiveNetworkInfo();
+
+        if (networkInfo != null && networkInfo.isConnected()) {
+            return true;
+        }
+        return false;
+    }
+
 
     private JSONObject makeRequest(String url) throws IOException, JSONException {
 
@@ -74,19 +95,15 @@ public class AnswerActivity extends ActionBarActivity {
 
         HttpClient httpclient = new DefaultHttpClient();
 
-        // create the request
         HttpUriRequest request = new HttpGet(url);
         request.addHeader("Accept-Encoding", "gzip");
 
-        // execute the request
         HttpResponse resp = httpclient.execute(request);
         StatusLine statusLine = resp.getStatusLine();
 
-        // check the request response status. Should be 200 OK
         if (statusLine.getStatusCode() == HttpStatus.SC_OK) {
             Header contentEncoding = resp.getFirstHeader("Content-Encoding");
             InputStream instream = resp.getEntity().getContent();
-            // was the returned response gzip'ed?
             if (contentEncoding != null && contentEncoding.getValue().equalsIgnoreCase("gzip")) {
                 instream = new GZIPInputStream(instream);
             }
@@ -135,29 +152,29 @@ public class AnswerActivity extends ActionBarActivity {
 
         @Override
         protected void onPostExecute(JSONObject jsonObject) {
-            try {
-                mJSONArr = jsonObject.getJSONArray("items");
-                if(mJSONArr.length()==0)
-                {
-                    pDialog.dismiss();
-                    Toast.makeText(AnswerActivity.this,"This question does not have any answers yet !",Toast.LENGTH_SHORT).show();
+            if (jsonObject != null) {
+                try {
+                    mJSONArr = jsonObject.getJSONArray("items");
+                    if (mJSONArr.length() == 0) {
+                        pDialog.dismiss();
+                        Toast.makeText(AnswerActivity.this, "This question does not have any answers yet !", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Answer answers[] = new Answer[mJSONArr.length()];
+                        for (int i = 0; i < mJSONArr.length(); i++) {
+                            ob2 = mJSONArr.getJSONObject(i);
+                            if (ob2 != null) {
+                                ob3 = ob2.getJSONObject("owner");
+                                answers[i] = new Answer(ob2.getString("body"), ob3.getString("display_name"), ob2.getString("score"));
+                            }
+                        }
+                        adapter = new AnswersAdapter(AnswerActivity.this,
+                                R.layout.answer_list_item, answers);
+                        answerList.setAdapter(adapter);
+                        pDialog.dismiss();
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
                 }
-                else{
-                Answer answers[] = new Answer[mJSONArr.length()];
-                for(int i=0;i<mJSONArr.length();i++)
-                {
-                        ob2 = mJSONArr.getJSONObject(i);
-                    if(ob2!=null) {
-                        ob3 = ob2.getJSONObject("owner");
-                        answers[i] = new Answer(ob2.getString("body"), ob3.getString("display_name"), ob2.getString("score"));
-                  }
-                }
-                adapter = new AnswersAdapter(AnswerActivity.this,
-                        R.layout.answer_list_item, answers);
-                answerList.setAdapter(adapter);
-                pDialog.dismiss();
-                }} catch (JSONException e) {
-                e.printStackTrace();
             }
         }
     }

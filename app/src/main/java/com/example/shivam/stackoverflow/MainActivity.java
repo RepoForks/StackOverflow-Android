@@ -7,6 +7,8 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.media.Image;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -45,7 +47,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Array;
+import java.net.HttpURLConnection;
 import java.net.URI;
+import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.zip.GZIPInputStream;
@@ -97,6 +101,17 @@ public class MainActivity extends ActionBarActivity implements OnQueryTextListen
 
     }
 
+    public boolean isNetworkAvailable() {
+        ConnectivityManager cm = (ConnectivityManager)
+                getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = cm.getActiveNetworkInfo();
+
+        if (networkInfo != null && networkInfo.isConnected()) {
+            return true;
+        }
+        return false;
+    }
+
 
 
     public JSONObject makeRequest(String url) throws IOException, JSONException {
@@ -106,19 +121,15 @@ public class MainActivity extends ActionBarActivity implements OnQueryTextListen
 
         HttpClient httpclient = new DefaultHttpClient();
 
-        // create the request
         HttpUriRequest request = new HttpGet(url);
         request.addHeader("Accept-Encoding", "gzip");
 
-        // execute the request
         HttpResponse resp = httpclient.execute(request);
         StatusLine statusLine = resp.getStatusLine();
 
-        // check the request response status. Should be 200 OK
         if (statusLine.getStatusCode() == HttpStatus.SC_OK) {
             Header contentEncoding = resp.getFirstHeader("Content-Encoding");
             InputStream instream = resp.getEntity().getContent();
-            // was the returned response gzip'ed?
             if (contentEncoding != null && contentEncoding.getValue().equalsIgnoreCase("gzip")) {
                 instream = new GZIPInputStream(instream);
             }
@@ -169,63 +180,63 @@ public class MainActivity extends ActionBarActivity implements OnQueryTextListen
 
         @Override
         protected void onPostExecute(JSONObject jsonObject) {
-            try {
-                mJSONArr = jsonObject.getJSONArray("items");
-                 img.setVisibility(View.GONE);
+            if (jsonObject != null) {
+                try {
+                    mJSONArr = jsonObject.getJSONArray("items");
+                    img.setVisibility(View.GONE);
                     tv.setVisibility(View.GONE);
                     questionList.setVisibility(View.VISIBLE);
                     Question question[] = new Question[mJSONArr.length()];
-                if(question.length==0)
-                {
-                    img.setVisibility(View.VISIBLE);
-                    tv.setVisibility(View.VISIBLE);
-                    questionList.setVisibility(View.GONE);
-                    Toast.makeText(MainActivity.this,"No Questions found!",Toast.LENGTH_SHORT).show();
-                    pDialog.dismiss();
-                }
-                else {
-                    for (int i = 0; i < mJSONArr.length(); i++) {
-                        ob2 = mJSONArr.getJSONObject(i);
-                        if (ob2 != null) {
-                            ob3 = ob2.getJSONObject("owner");
-                            question[i] = new Question(ob2.getString("title"), ob3.getString("display_name"), ob2.getString("score"), ob2.getString("question_id"));
-                            ids.add(ob2.getString("question_id"));
-                            authors.add(ob3.getString("display_name"));
-                            titles.add(ob2.getString("title"));
-                            votes.add(ob2.getString("score"));
+                    if (question.length == 0) {
+                        img.setVisibility(View.VISIBLE);
+                        tv.setVisibility(View.VISIBLE);
+                        questionList.setVisibility(View.GONE);
+                        Toast.makeText(MainActivity.this, "No Questions found!", Toast.LENGTH_SHORT).show();
+                        pDialog.dismiss();
+                    } else {
+                        for (int i = 0; i < mJSONArr.length(); i++) {
+                            ob2 = mJSONArr.getJSONObject(i);
+                            if (ob2 != null) {
+                                ob3 = ob2.getJSONObject("owner");
+                                question[i] = new Question(ob2.getString("title"), ob3.getString("display_name"), ob2.getString("score"), ob2.getString("question_id"));
+                                ids.add(ob2.getString("question_id"));
+                                authors.add(ob3.getString("display_name"));
+                                titles.add(ob2.getString("title"));
+                                votes.add(ob2.getString("score"));
+                            }
                         }
+                        adapter = new QuestionsAdapter(MainActivity.this,
+                                R.layout.question_list_item, question);
+
+                        holdid = new JSONObject();
+                        holdid.put("uniqueIDs", new JSONArray(ids));
+                        String _id = holdid.toString();
+                        Log.e("VALUE5", _id);
+
+
+                        holdauthor = new JSONObject();
+                        holdauthor.put("uniqueAuthors", new JSONArray(authors));
+                        String _auth = holdauthor.toString();
+                        Log.e("VALUE4", _auth);
+
+                        holdtitle = new JSONObject();
+                        holdtitle.put("uniqueTitles", new JSONArray(titles));
+                        String _title = holdtitle.toString();
+                        Log.e("VALUE2", _title);
+
+                        holdvotes = new JSONObject();
+                        holdvotes.put("uniqueVotes", new JSONArray(votes));
+                        String _vote = holdvotes.toString();
+                        Log.e("VALUE", _vote);
+
+                        q.insertQuestion3(MainActivity.this, _id, _title, _auth, _vote, val);
+                        questionList.setAdapter(adapter);
+                        pDialog.dismiss();
+                        url = "https://api.stackexchange.com/2.2/search?order=desc&sort=activity&";
                     }
-                    adapter = new QuestionsAdapter(MainActivity.this,
-                            R.layout.question_list_item, question);
-
-                    holdid = new JSONObject();
-                    holdid.put("uniqueIDs", new JSONArray(ids));
-                    String _id = holdid.toString();
-                    Log.e("VALUE5",_id);
-
-
-                    holdauthor = new JSONObject();
-                    holdauthor.put("uniqueAuthors",new JSONArray(authors));
-                    String _auth = holdauthor.toString();
-                    Log.e("VALUE4",_auth);
-
-                    holdtitle = new JSONObject();
-                    holdtitle.put("uniqueTitles",new JSONArray(titles));
-                    String _title = holdtitle.toString();
-                    Log.e("VALUE2",_title);
-
-                    holdvotes = new JSONObject();
-                    holdvotes.put("uniqueVotes",new JSONArray(votes));
-                    String _vote = holdvotes.toString();
-                    Log.e("VALUE",_vote);
-
-                    //q.insertQuestion(MainActivity.this, question, url);
-                    q.insertQuestion3(MainActivity.this,_id,_title,_auth,_vote,val);
-                    questionList.setAdapter(adapter);
-                    pDialog.dismiss();
-                    url = "https://api.stackexchange.com/2.2/search?order=desc&sort=activity&";
-                } }catch (JSONException e) {
-                e.printStackTrace();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }
@@ -264,12 +275,8 @@ public class MainActivity extends ActionBarActivity implements OnQueryTextListen
 
         @Override
         protected void onPostExecute(ArrayList<ArrayList<String>> arrayLists) {
-            Log.e("SIZE",String.valueOf(arrayLists.size()));
-            System.out.println(arrayLists);
             ArrayList<String> ids = arrayLists.get(0);
             ArrayList<String> title = arrayLists.get(1);
-            //System.out.print(title);
-            Log.e("TITLE",String.valueOf(title.size()));
             ArrayList<String> author = arrayLists.get(2);
             ArrayList<String> vote = arrayLists.get(3);
             img.setVisibility(View.GONE);
@@ -296,42 +303,6 @@ public class MainActivity extends ActionBarActivity implements OnQueryTextListen
         mSearchView.setOnQueryTextListener(this);
         return super.onCreateOptionsMenu(menu);
     }
-
-    public String readJSON() {
-        HttpClient client = new DefaultHttpClient();
-        HttpGet httpGet = new HttpGet(url);
-
-        HttpResponse response = null;
-        try {
-            response = client.execute(httpGet);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        StatusLine statusLine = response.getStatusLine();
-        int statusCode = statusLine.getStatusCode();
-        if (statusCode == 200) {
-            HttpEntity entity = response.getEntity();
-            InputStream content = null;
-            try {
-                content = entity.getContent();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            BufferedReader reader = new BufferedReader(new InputStreamReader(content));
-            String line;
-            try {
-                while ((line = reader.readLine()) != null) {
-                    builder.append(line);
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        } else {
-            //Log.e(re.class.toString(), "Failed to download file");
-        }
-        return builder.toString();
-    }
-
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -370,7 +341,17 @@ public class MainActivity extends ActionBarActivity implements OnQueryTextListen
             new SQLTask().execute();
         }
         else {
-            new JSONTask().execute();
+            if(isNetworkAvailable()) {
+                new JSONTask().execute();
+            }
+            else
+            {
+                img.setVisibility(View.VISIBLE);
+                tv.setVisibility(View.VISIBLE);
+                questionList.setVisibility(View.GONE);
+                Toast.makeText(MainActivity.this,"Internet Connection is needed to search for Questions which are not saved offline!",Toast.LENGTH_SHORT).show();
+
+            }
         }
         return false;
     }

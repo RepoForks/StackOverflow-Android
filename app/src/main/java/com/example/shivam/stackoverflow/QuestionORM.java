@@ -19,7 +19,7 @@ import java.util.ArrayList;
 public class QuestionORM {
 
     private static final String TAG = "QuestionORM";
-    public static final String TABLE_NAME = "question";//////////////////////
+    public static final String TABLE_NAME = "question";
     private static final String COMMA_SEP = ", ";
     private static final String COLUMN_ID_TYPE = "TEXT";
     private static final String COLUMN_ID = "id";
@@ -32,27 +32,9 @@ public class QuestionORM {
     private static final String COLUMN_SEARCH_TYPE = "TEXT";
     private static final String COLUMN_SEARCH = "search";
     private static final String KEY_PRIMARY = "pk";
-    //    private static SQLiteDatabase myDataBase = null;
     private DatabaseWrapper dw;
 
     SQLiteDatabase myDataBase;
-//    public static final String SQL_CREATE_TABLE =
-//            "CREATE TABLE " + TABLE_NAME + "("
-//                    + COLUMN_ID + " "
-//                    + COLUMN_ID_TYPE + COMMA_SEP
-//                    + COLUMN_TITLE  + " "
-//                    + COLUMN_TITLE_TYPE
-//                    + COMMA_SEP
-//                    + COLUMN_AUTHOR + " "
-//                    + COLUMN_AUTHOR_TYPE
-//                    + COMMA_SEP
-//                    + COLUMN_VOTES + " "
-//                    + COLUMN_VOTES_TYPE
-//                    + COMMA_SEP
-//                    + COLUMN_SEARCH + " "
-//                    + COLUMN_SEARCH_TYPE +
-//                    ")";
-
     public static final String SQL_CREATE_TABLE =
             "CREATE TABLE " + TABLE_NAME + "("
                     + KEY_PRIMARY + " INTEGER PRIMARY KEY AUTOINCREMENT, "
@@ -72,22 +54,6 @@ public class QuestionORM {
     public static final String SQL_DROP_TABLE =
             "DROP TABLE IF EXISTS " + TABLE_NAME;
 
-    public int insertQuestion(Context c, Question[] questions, String search) throws JSONException {
-        DatabaseWrapper databaseWrapper = new DatabaseWrapper(c);
-        Log.e("ERROR2", String.valueOf(isDatabaseOpened()));
-        myDataBase = databaseWrapper.getWritableDatabase();
-
-        long questionId = 0;
-        if (isDatabaseOpened()) {
-
-            ContentValues values = postToContentValues2(questions);
-            values.put(QuestionORM.COLUMN_SEARCH, search);
-            questionId = myDataBase.insert(QuestionORM.TABLE_NAME, null, values);
-            Log.e(TAG, "Inserted new Question with ID: " + questions.length);
-            myDataBase.close();
-        }
-        return (int) questionId;
-    }
 
     public int insertQuestion3(Context c,String ids,String titles,String authors,String votes,String search)
     {
@@ -115,7 +81,7 @@ public class QuestionORM {
         DatabaseWrapper databaseWrapper = new DatabaseWrapper(c);
         myDataBase = databaseWrapper.getWritableDatabase();
         //Cursor cur = myDataBase.rawQuery("SELECT * FROM "+TABLE_NAME+" WHERE "+COLUMN_SEARCH+" = "+search,null);
-        Cursor cur = myDataBase.rawQuery("SELECT * FROM question WHERE search"+ "= '" + search + "'",null);
+        Cursor cur = myDataBase.rawQuery("SELECT * FROM question WHERE search"+ "= '" + search + "'"+" COLLATE NOCASE",null);
         if(cur.getCount()>0)
         {
             return true;
@@ -147,14 +113,9 @@ public class QuestionORM {
         ArrayList<String> items = new ArrayList<String>();
         Cursor cur = myDataBase.rawQuery("SELECT * FROM question WHERE search"+ "= '" + search + "'",null);
         cur.moveToFirst();
-        //Log.e("CURSOR",cur.getString(2));
-        //Log.e("COUNT",String.valueOf(cur.getCount()));
-//        Log.e("SEARCH",cur.getString(cur.getColumnIndex("search")));
         JSONObject json = new JSONObject(cur.getString(3));
         System.out.println(json);
         JSONArray jarr = json.optJSONArray("uniqueAuthors");
-        Log.e("ERROR2",String.valueOf(jarr));
-        //System.out.println(jarr);
         for(int i=0;i<jarr.length();i++)
         {
             items.add(jarr.getString(i));
@@ -183,7 +144,6 @@ public class QuestionORM {
         ArrayList<String> items = new ArrayList<String>();
         Cursor cur = myDataBase.rawQuery("SELECT * FROM question WHERE search"+ "= '" + search + "'",null);
         cur.moveToFirst();
-        Log.e("COUNT",String.valueOf(cur.getCount()));
         JSONObject json = new JSONObject(cur.getString(1));
 
         JSONArray jarr = json.optJSONArray("uniqueIDs");
@@ -194,20 +154,9 @@ public class QuestionORM {
         return items;
     }
 
-    private  static ContentValues postToContentValues(Question question) {
-
-        ContentValues values = new ContentValues();
-        values.put(QuestionORM.COLUMN_ID, question.getID());
-        values.put(QuestionORM.COLUMN_TITLE, question.getTitle());
-        values.put(QuestionORM.COLUMN_AUTHOR, question.getAuthor());
-        values.put(QuestionORM.COLUMN_VOTES, question.getVotes());
-        return values;
-    }
-
     private static ContentValues postToContentValues2(Question[]  questions) throws JSONException {
         ContentValues values = new ContentValues();
         for (int i = 0; i < questions.length; i++) {
-            //JSONObject job1 = jsonArray.getJSONObject(i);
             if (questions.length != 0) {
                 //JSONObject job2 = job1.getJSONObject("owner");
                 values.put(QuestionORM.COLUMN_ID, questions[i].getID());
