@@ -323,11 +323,8 @@ public class MainActivity extends ActionBarActivity implements OnQueryTextListen
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
-        Log.e("STRING", s);
         val = s.trim();
-        Log.e("VAL", val);
         exists = q.doesExist(MainActivity.this, val);
-        Log.e("EXISTS", String.valueOf(exists));
 
         url += "intitle=" + s + "&site=stackoverflow";
         img.setVisibility(View.GONE);

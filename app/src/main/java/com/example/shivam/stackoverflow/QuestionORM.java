@@ -160,7 +160,6 @@ public class QuestionORM {
         if (myDataBase == null) {
             return false;
         } else {
-            Log.e("OPEN", String.valueOf(myDataBase.isOpen()));
             return myDataBase.isOpen();
         }
 
