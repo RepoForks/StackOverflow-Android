@@ -40,7 +40,7 @@ import java.util.zip.GZIPInputStream;
 
 public class AnswerActivity extends ActionBarActivity {
 
-    private final String endPoint = "http://api.stackexchange.com/2.2/";
+    private final String initialURL = "http://api.stackexchange.com/2.2/";
     private String site = "site=stackoverflow";
     String requestUrl=null;
     ListView answerList;
@@ -62,11 +62,11 @@ public class AnswerActivity extends ActionBarActivity {
             e.printStackTrace();
         }
         answerList = (ListView)findViewById(R.id.answerList);
-        requestUrl = this.endPoint + "questions/" + question + "/answers?order=desc&sort=activity&filter=withbody&" + this.site;
+        //appending the questionID to the URL
+        requestUrl = this.initialURL + "questions/" + question + "/answers?order=desc&sort=activity&filter=withbody&" + this.site;
         Resources r=getResources();
         Drawable d=r.getDrawable(R.color.primary);
         getSupportActionBar().setBackgroundDrawable(d);
-        Log.e("URL",requestUrl);
         if(isNetworkAvailable()) {
             new JSONTask().execute();
         }
@@ -189,15 +189,13 @@ public class AnswerActivity extends ActionBarActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
         }
+        //For home UP navigation
         if(id==R.id.home)
         {
             NavUtils.navigateUpFromSameTask(this);

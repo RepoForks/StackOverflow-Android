@@ -16,20 +16,20 @@ import java.util.ArrayList;
 /**
  * Created by Shivam on 29/04/15 at 3:34 PM.
  */
+
+/*This class contains function to insert and retrieve items from the database
+*trim ensures that leading and trailing blankspaces are removed.
+*COLLATE NOCASE ensures case insensitivity.
+*/
+
 public class QuestionORM {
 
     private static final String TAG = "QuestionORM";
     public static final String TABLE_NAME = "question";
-    private static final String COMMA_SEP = ", ";
-    private static final String COLUMN_ID_TYPE = "TEXT";
     private static final String COLUMN_ID = "id";
-    private static final String COLUMN_TITLE_TYPE = "TEXT";
     private static final String COLUMN_TITLE = "title";
-    private static final String COLUMN_AUTHOR_TYPE = "TEXT";
     private static final String COLUMN_AUTHOR = "author";
-    private static final String COLUMN_VOTES_TYPE = "TEXT";
     private static final String COLUMN_VOTES = "votes";
-    private static final String COLUMN_SEARCH_TYPE = "TEXT";
     private static final String COLUMN_SEARCH = "search";
     private static final String KEY_PRIMARY = "pk";
     private DatabaseWrapper dw;
@@ -39,27 +39,18 @@ public class QuestionORM {
             "CREATE TABLE " + TABLE_NAME + "("
                     + KEY_PRIMARY + " INTEGER PRIMARY KEY AUTOINCREMENT, "
                     + COLUMN_ID + " TEXT, "
-
                     + COLUMN_TITLE + " TEXT, "
-
-
                     + COLUMN_AUTHOR + " TEXT, "
-
-
                     + COLUMN_VOTES + " TEXT, "
-
-
-                    + COLUMN_SEARCH + " TEXT UNIQUE)";
+                    + COLUMN_SEARCH + " TEXT UNIQUE)"; //ensures that a particular search query can only be present once in the database.
 
     public static final String SQL_DROP_TABLE =
             "DROP TABLE IF EXISTS " + TABLE_NAME;
 
 
-    public int insertQuestion3(Context c, String ids, String titles, String authors, String votes, String search) {
+    public int insertQuestion(Context c, String ids, String titles, String authors, String votes, String search) {
         DatabaseWrapper databaseWrapper = new DatabaseWrapper(c);
-        Log.e("ERROR2", String.valueOf(isDatabaseOpened()));
         myDataBase = databaseWrapper.getWritableDatabase();
-
         long questionId = 0;
         if (isDatabaseOpened()) {
             ContentValues values = new ContentValues();
@@ -75,6 +66,7 @@ public class QuestionORM {
         return (int) questionId;
     }
 
+    //does a particular search string exist in the database
     public boolean doesExist(Context c, String search) {
         DatabaseWrapper databaseWrapper = new DatabaseWrapper(c);
         myDataBase = databaseWrapper.getWritableDatabase();
@@ -86,6 +78,7 @@ public class QuestionORM {
         }
     }
 
+    //gets an array list of titles corresponding to a particular search query
     public ArrayList<String> getTitleDetails(Context c, String search) throws JSONException {
         DatabaseWrapper databaseWrapper = new DatabaseWrapper(c);
         myDataBase = databaseWrapper.getWritableDatabase();
@@ -105,6 +98,7 @@ public class QuestionORM {
 
     }
 
+    //gets an array list of authors corresponding to a particular search query
     public ArrayList<String> getAuthorDetails(Context c, String search) throws JSONException {
         DatabaseWrapper databaseWrapper = new DatabaseWrapper(c);
         myDataBase = databaseWrapper.getWritableDatabase();
@@ -123,6 +117,7 @@ public class QuestionORM {
         return items;
     }
 
+    //gets an array list of votes corresponding to a particular search query
     public ArrayList<String> getVoteDetails(Context c, String search) throws JSONException {
         DatabaseWrapper databaseWrapper = new DatabaseWrapper(c);
         myDataBase = databaseWrapper.getWritableDatabase();
@@ -141,13 +136,12 @@ public class QuestionORM {
         return items;
     }
 
+    //gets an array list of question ids corresponding to a particular search query
     public ArrayList<String> getIDDetails(Context c, String search) throws JSONException {
         DatabaseWrapper databaseWrapper = new DatabaseWrapper(c);
         myDataBase = databaseWrapper.getWritableDatabase();
         ArrayList<String> items = new ArrayList<String>();
         Cursor cur = myDataBase.rawQuery("SELECT * FROM question WHERE search" + "= '" + search.trim() + "'"+ " COLLATE NOCASE", null);
-        //cur.moveToFirst();
-      //  System.out.println(cur.getString(1));
         for(cur.moveToFirst();!cur.isAfterLast();cur.moveToNext()) {
             if (cur.getString(5).trim().equalsIgnoreCase(search.trim())) {
                 JSONObject json = new JSONObject(cur.getString(1));
@@ -161,21 +155,7 @@ public class QuestionORM {
         return items;
     }
 
-    private static ContentValues postToContentValues2(Question[] questions) throws JSONException {
-        ContentValues values = new ContentValues();
-        for (int i = 0; i < questions.length; i++) {
-            if (questions.length != 0) {
-                //JSONObject job2 = job1.getJSONObject("owner");
-                values.put(QuestionORM.COLUMN_ID, questions[i].getID());
-                values.put(QuestionORM.COLUMN_TITLE, questions[i].getTitle());
-                values.put(QuestionORM.COLUMN_AUTHOR, questions[i].getAuthor());
-                values.put(QuestionORM.COLUMN_VOTES, questions[i].getVotes());
-            }
-        }
-        return values;
-    }
-
-
+    //Checks whether database is open or its instance already exists. Fixes a very big error !!
     public boolean isDatabaseOpened() {
         if (myDataBase == null) {
             return false;

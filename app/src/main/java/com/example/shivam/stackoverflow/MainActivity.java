@@ -57,22 +57,22 @@ import java.util.zip.GZIPInputStream;
 public class MainActivity extends ActionBarActivity implements OnQueryTextListener {
 
     SearchView mSearchView;
-    StringBuilder builder = new StringBuilder();
     JSONArray mJSONArr;
-    JSONObject ob3,ob2,questionsJson;
-    JSONObject holdid,holdauthor,holdtitle,holdvotes;
+    JSONObject ob3, ob2, questionsJson;
+    JSONObject holdid, holdauthor, holdtitle, holdvotes;
     ArrayList<ArrayList<String>> listHolder = new ArrayList<ArrayList<String>>();
-    String holder=null;
+    String holder = null;
     TextView tv;
     QuestionsAdapter adapter;
     OfflineAdapter adapter2;
     ListView questionList;
-    ImageView img;
+    ImageView img; //UI elements for the empty states
     String val;
-    ArrayList<String> sqlids,sqlauthors,sqltitles,sqlvotes;
+    ArrayList<String> sqlids, sqlauthors, sqltitles, sqlvotes; //array lists to hold question details retrieved from the database
     boolean exists;
     QuestionORM q = new QuestionORM();
     String url = "https://api.stackexchange.com/2.2/search?order=desc&sort=activity&";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -82,24 +82,26 @@ public class MainActivity extends ActionBarActivity implements OnQueryTextListen
         sqltitles = new ArrayList<>(20);
         sqlvotes = new ArrayList<>(20);
 
-        questionList = (ListView)findViewById(R.id.questionList);
-        tv = (TextView)findViewById(R.id.introText);
-        img = (ImageView)findViewById(R.id.introImage);
+        questionList = (ListView) findViewById(R.id.questionList);
+        tv = (TextView) findViewById(R.id.introText);
+        img = (ImageView) findViewById(R.id.introImage);
         questionList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String selectedQuestion = ((TextView)(view.findViewById(R.id.questionID))).getText().toString();
-                Intent i = new Intent(MainActivity.this,AnswerActivity.class);
-                i.putExtra("QUESTION",selectedQuestion);
+                String selectedQuestion = ((TextView) (view.findViewById(R.id.questionID))).getText().toString();
+                Intent i = new Intent(MainActivity.this, AnswerActivity.class);
+                i.putExtra("QUESTION", selectedQuestion);
                 startActivity(i);
             }
         });
-        Resources r=getResources();
-        Drawable d=r.getDrawable(R.color.primary);
+        /* Colors the action bar for API<21 */
+        Resources r = getResources();
+        Drawable d = r.getDrawable(R.color.primary);
         getSupportActionBar().setBackgroundDrawable(d);
 
     }
 
+    //Checks for net connectivity while performing searches
     public boolean isNetworkAvailable() {
         ConnectivityManager cm = (ConnectivityManager)
                 getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -112,7 +114,7 @@ public class MainActivity extends ActionBarActivity implements OnQueryTextListen
     }
 
 
-
+    /* Makes a HTTP request to the given URL and retrieves a JSON Object */
     public JSONObject makeRequest(String url) throws IOException, JSONException {
 
         JSONObject response;
@@ -150,16 +152,15 @@ public class MainActivity extends ActionBarActivity implements OnQueryTextListen
     }
 
 
-
-    public class JSONTask extends AsyncTask<String,String,JSONObject>
-    {
+    /* Retrieves questions from the API asynchronously */
+    public class JSONTask extends AsyncTask<String, String, JSONObject> {
         private ProgressDialog pDialog;
 
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
             pDialog = new ProgressDialog(MainActivity.this);
-            pDialog.setMessage("Getting Data ...");
+            pDialog.setMessage("Searching for Questions ...");
             pDialog.setIndeterminate(false);
             pDialog.setCancelable(true);
             pDialog.show();
@@ -181,7 +182,7 @@ public class MainActivity extends ActionBarActivity implements OnQueryTextListen
         protected void onPostExecute(JSONObject jsonObject) {
             if (jsonObject != null) {
                 try {
-                    ArrayList<String> ids,authors,titles,votes;
+                    ArrayList<String> ids, authors, titles, votes;
                     ids = new ArrayList<String>(20);
                     authors = new ArrayList<String>(20);
                     titles = new ArrayList<String>(20);
@@ -215,25 +216,20 @@ public class MainActivity extends ActionBarActivity implements OnQueryTextListen
                         holdid = new JSONObject();
                         holdid.put("uniqueIDs", new JSONArray(ids));
                         String _id = holdid.toString();
-                        Log.e("VALUE5", _id);
-
 
                         holdauthor = new JSONObject();
                         holdauthor.put("uniqueAuthors", new JSONArray(authors));
                         String _auth = holdauthor.toString();
-                        Log.e("VALUE4", _auth);
 
                         holdtitle = new JSONObject();
                         holdtitle.put("uniqueTitles", new JSONArray(titles));
                         String _title = holdtitle.toString();
-                        Log.e("VALUE2", _title);
 
                         holdvotes = new JSONObject();
                         holdvotes.put("uniqueVotes", new JSONArray(votes));
                         String _vote = holdvotes.toString();
-                        Log.e("VALUE", _vote);
 
-                        q.insertQuestion3(MainActivity.this, _id, _title, _auth, _vote, val);
+                        q.insertQuestion(MainActivity.this, _id, _title, _auth, _vote, val);
                         questionList.setAdapter(adapter);
                         pDialog.dismiss();
                         url = "https://api.stackexchange.com/2.2/search?order=desc&sort=activity&";
@@ -245,8 +241,8 @@ public class MainActivity extends ActionBarActivity implements OnQueryTextListen
         }
     }
 
-    public class SQLTask extends AsyncTask<String,String,ArrayList<ArrayList<String>>>
-    {
+    /* Retrieves questions from the database asynchronously */
+    public class SQLTask extends AsyncTask<String, String, ArrayList<ArrayList<String>>> {
 
         private ProgressDialog pDialog;
 
@@ -254,7 +250,7 @@ public class MainActivity extends ActionBarActivity implements OnQueryTextListen
         protected void onPreExecute() {
             super.onPreExecute();
             pDialog = new ProgressDialog(MainActivity.this);
-            pDialog.setMessage("Getting Data ...");
+            pDialog.setMessage("Searching for Questions ...");
             pDialog.setIndeterminate(false);
             pDialog.setCancelable(true);
             pDialog.show();
@@ -263,14 +259,13 @@ public class MainActivity extends ActionBarActivity implements OnQueryTextListen
         @Override
         protected ArrayList<ArrayList<String>> doInBackground(String... params) {
             try {
-                sqlauthors = q.getAuthorDetails(MainActivity.this,val);
-                sqlids = q.getIDDetails(MainActivity.this,val);
-                sqltitles = q.getTitleDetails(MainActivity.this,val);
-                sqlvotes = q.getVoteDetails(MainActivity.this,val);
+                sqlauthors = q.getAuthorDetails(MainActivity.this, val);
+                sqlids = q.getIDDetails(MainActivity.this, val);
+                sqltitles = q.getTitleDetails(MainActivity.this, val);
+                sqlvotes = q.getVoteDetails(MainActivity.this, val);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-            //System.out.println(sqltitles);
             listHolder.add(sqlids);
             listHolder.add(sqltitles);
             listHolder.add(sqlauthors);
@@ -281,24 +276,18 @@ public class MainActivity extends ActionBarActivity implements OnQueryTextListen
 
         @Override
         protected void onPostExecute(ArrayList<ArrayList<String>> arrayLists) {
-            //System.out.println(listHolder.get(1));
-            //System.out.println(sqltitles);
             ArrayList<String> ids = sqlids;
             ArrayList<String> title = sqltitles;
             ArrayList<String> author = sqlauthors;
             ArrayList<String> vote = sqlvotes;
-            //System.out.println(title);
             img.setVisibility(View.GONE);
             tv.setVisibility(View.GONE);
             questionList.setVisibility(View.VISIBLE);
-            adapter2 = new OfflineAdapter(MainActivity.this,R.layout.question_list_item,ids,author,title,vote);
+            adapter2 = new OfflineAdapter(MainActivity.this, R.layout.question_list_item, ids, author, title, vote);
             questionList.setAdapter(adapter2);
             pDialog.dismiss();
             val = null;
-            Toast.makeText(MainActivity.this,"Loaded from DB",Toast.LENGTH_SHORT).show();
-            //Log.e("NEWSTRING","value is"+val+" and nothing");
-            //url = "https://api.stackexchange.com/2.2/search?order=desc&sort=activity&";
-
+            Toast.makeText(MainActivity.this, "Loaded from Cached Questions", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -317,12 +306,7 @@ public class MainActivity extends ActionBarActivity implements OnQueryTextListen
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
         }
@@ -339,33 +323,27 @@ public class MainActivity extends ActionBarActivity implements OnQueryTextListen
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
-        Log.e("STRING",s);
+        Log.e("STRING", s);
         val = s.trim();
-        Log.e("VAL",val);
+        Log.e("VAL", val);
         exists = q.doesExist(MainActivity.this, val);
-        Log.e("EXISTS",String.valueOf(exists));
+        Log.e("EXISTS", String.valueOf(exists));
 
-        url+="intitle="+s+"&site=stackoverflow";
+        url += "intitle=" + s + "&site=stackoverflow";
         img.setVisibility(View.GONE);
         tv.setVisibility(View.GONE);
 
         questionList.setVisibility(View.VISIBLE);
-        if(exists==true)
-        {
-            //Toast.makeText(MainActivity.this,val,Toast.LENGTH_SHORT).show();
+        if (exists == true) {
             new SQLTask().execute();
-        }
-        else {
-            if(isNetworkAvailable()) {
+        } else {
+            if (isNetworkAvailable()) {
                 new JSONTask().execute();
-            }
-            else
-            {
+            } else {
                 img.setVisibility(View.VISIBLE);
                 tv.setVisibility(View.VISIBLE);
                 questionList.setVisibility(View.GONE);
-                Toast.makeText(MainActivity.this,"Internet Connection is needed to search for Questions which are not saved offline!",Toast.LENGTH_SHORT).show();
-
+                Toast.makeText(MainActivity.this, R.string.offline_error, Toast.LENGTH_SHORT).show();
             }
         }
         return false;

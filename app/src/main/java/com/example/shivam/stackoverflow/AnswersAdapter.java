@@ -17,6 +17,7 @@ import android.widget.TextView;
 /**
  * Created by Shivam on 26/04/15.
  */
+//Adapter for the list showing the answers to a particular question
 public class AnswersAdapter extends ArrayAdapter<Answer> {
 
     static Context context;

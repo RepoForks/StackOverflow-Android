@@ -16,6 +16,7 @@ import java.util.ArrayList;
 /**
  * Created by Shivam on 04/05/15 at 9:52 PM.
  */
+//Adapter for the list showing items when offline
 public class OfflineAdapter extends BaseAdapter {
 
     static Context context;
@@ -36,6 +37,7 @@ public class OfflineAdapter extends BaseAdapter {
         this.vote = vote;
     }
 
+    //ensures that only 20 items are displayed
     @Override
     public int getCount() {
         return 20;
@@ -69,13 +71,14 @@ public class OfflineAdapter extends BaseAdapter {
         {
             holder = (QuestionHolder)row.getTag();
         }
-            holder.txtTitle.setText(Html.fromHtml(title.get(position)));
+            holder.txtTitle.setText(Html.fromHtml(title.get(position))); //to parse the HTML question into text
             holder.txtTitle2.setText(author.get(position));
             holder.txtTitle3.setText(vote.get(position)+" votes");
             holder.txtTitle4.setText(qid.get(position));
         return row;
     }
 
+    /*View holder design pattern to allow for recycling of list items*/
     static class QuestionHolder
     {
         TextView txtTitle;

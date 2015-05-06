@@ -15,6 +15,7 @@ import android.widget.TextView;
 /**
  * Created by Shivam on 26/04/15.
  */
+//Adapter to show list of items loaded from the API calls
 public class QuestionsAdapter extends ArrayAdapter<Question> {
 
     static Context context;
@@ -64,7 +65,7 @@ public class QuestionsAdapter extends ArrayAdapter<Question> {
         }
         return row;
     }
-
+    /*View holder design pattern to allow for recycling of list items*/
     static class QuestionHolder
     {
         TextView txtTitle;
