@@ -70,7 +70,7 @@ public class OfflineAdapter extends BaseAdapter {
         {
             holder = (QuestionHolder)row.getTag();
         }
-        if(position>19)
+        if(position>19&&qid.size()<20)
         {
             holder.txtTitle.setVisibility(View.GONE);
             holder.txtTitle2.setVisibility(View.GONE);

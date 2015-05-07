@@ -22,6 +22,7 @@ public class QuestionsAdapter extends ArrayAdapter<Question> {
     static int layoutResourceId;
     Question data[] = null;
 
+
     public QuestionsAdapter(Context context, int layoutResourceId, Question[] data) {
         super(context, layoutResourceId, data);
         this.layoutResourceId = layoutResourceId;
@@ -58,7 +59,7 @@ public class QuestionsAdapter extends ArrayAdapter<Question> {
         }
         Question hold = data[position];
         if(hold!=null) {
-            if(position>19)
+            if(position>19&&data.length<20)
             {
                 holder.txtTitle.setVisibility(View.GONE);
                 holder.txtTitle2.setVisibility(View.GONE);
