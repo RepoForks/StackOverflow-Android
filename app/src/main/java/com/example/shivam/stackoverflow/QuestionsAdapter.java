@@ -30,9 +30,9 @@ public class QuestionsAdapter extends ArrayAdapter<Question> {
     }
 
     @Override
-    public int getCount() {
+    /*public int getCount() {
         return 20;
-    }
+    }*/
 
     public long getItemId(int position) {
         return position;
@@ -58,10 +58,19 @@ public class QuestionsAdapter extends ArrayAdapter<Question> {
         }
         Question hold = data[position];
         if(hold!=null) {
-            holder.txtTitle.setText(Html.fromHtml(hold.title));
-            holder.txtTitle2.setText(hold.author);
-            holder.txtTitle3.setText(hold.votes+" votes");
-            holder.txtTitle4.setText(hold.id);
+            if(position>19)
+            {
+                holder.txtTitle.setVisibility(View.GONE);
+                holder.txtTitle2.setVisibility(View.GONE);
+                holder.txtTitle3.setVisibility(View.GONE);
+                holder.txtTitle4.setVisibility(View.GONE);
+            }
+            else {
+                holder.txtTitle.setText(Html.fromHtml(hold.title));
+                holder.txtTitle2.setText(hold.author);
+                holder.txtTitle3.setText(hold.votes + " votes");
+                holder.txtTitle4.setText(hold.id);
+            }
         }
         return row;
     }

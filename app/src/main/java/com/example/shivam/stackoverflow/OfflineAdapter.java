@@ -37,10 +37,9 @@ public class OfflineAdapter extends BaseAdapter {
         this.vote = vote;
     }
 
-    //ensures that only 20 items are displayed
     @Override
     public int getCount() {
-        return 20;
+        return qid.size();
     }
 
     @Override
@@ -71,10 +70,19 @@ public class OfflineAdapter extends BaseAdapter {
         {
             holder = (QuestionHolder)row.getTag();
         }
+        if(position>19)
+        {
+            holder.txtTitle.setVisibility(View.GONE);
+            holder.txtTitle2.setVisibility(View.GONE);
+            holder.txtTitle3.setVisibility(View.GONE);
+            holder.txtTitle4.setVisibility(View.GONE);
+        }
+        else {
             holder.txtTitle.setText(Html.fromHtml(title.get(position))); //to parse the HTML question into text
             holder.txtTitle2.setText(author.get(position));
-            holder.txtTitle3.setText(vote.get(position)+" votes");
+            holder.txtTitle3.setText(vote.get(position) + " votes");
             holder.txtTitle4.setText(qid.get(position));
+        }
         return row;
     }
 
